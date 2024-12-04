@@ -11,28 +11,28 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/", async (req, res) => {
-  // console.log(req.body)
   try {
     let q;
-    if(req.body.destination){
-      q=req.body.destination
-    }else{
+    if (req.body.destination) {
+      q = req.body.destination;
+    } else if (req.body.source) {
       q = req.body.source;
+    } else {
+      return res
+        .status(400)
+        .send({ status: "failed", data: "source or destination is required" });
     }
 
     q = q.toUpperCase();
-    // console.log(q);
-    let data = await CityModel.find();
 
+    let data = await CityModel.find();
     let city = data.filter((ele) => {
       return ele.name.toUpperCase().includes(q);
     });
 
-    // console.log(city);
-
     return res.send(city);
   } catch (error) {
-    return res.send(error.message);
+    return res.status(500).send({ status: "failed", data: error.message });
   }
 });
 
@@ -43,22 +43,25 @@ app.post("/showcity", async (req, res) => {
   let destination =
     destinationStr.charAt(0).toUpperCase() + destinationStr.substr(1);
   try {
-    let fromcheck= await CityModel.findOne({name:source})
-    let destinationcheck=await CityModel.findOne({name:destination})
+    let fromcheck = await CityModel.findOne({ name: source });
+    let destinationcheck = await CityModel.findOne({ name: destination });
     // console.log(fromcheck)
     // console.log(destinationcheck)
-    if(fromcheck){
-      if(destinationcheck){
-        return res.send({status:"success",data:"Buses In Your City Are Here"})
-      }else{
-        return res.send({status:"failed",data:"destination is not found"})
+    if (fromcheck) {
+      if (destinationcheck) {
+        return res.send({
+          status: "success",
+          data: "Buses In Your City Are Here",
+        });
+      } else {
+        return res.send({ status: "failed", data: "destination is not found" });
       }
-    }else{
-      return res.send({status:"failed",data:"source is not found"})
+    } else {
+      return res.send({ status: "failed", data: "source is not found" });
     }
   } catch (error) {
-    return res.send(error.message)
+    return res.send(error.message);
   }
-})
+});
 
 module.exports = app;

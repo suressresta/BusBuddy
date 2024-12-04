@@ -1,21 +1,13 @@
-// const mongoose = require("mongoose");
-// require("dotenv").config();
-
-// let connect = () => {
-//   return mongoose.connect("mongodb://127.0.0.1:27017/newbus");
-// };
-
-// module.exports= connect;
+// index.js or your main app file
+require("dotenv").config(); // Load environment variables from .env file
 
 const mongoose = require("mongoose");
 
 let connect = () => {
-  return mongoose.connect(
-    "mongodb+srv://raman:raman@cluster0.fm7rpoi.mongodb.net/ecom",
-    { useNewUrlParser: true }
-  );
+  return mongoose.connect(process.env.MONGO_PATH, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 };
 
 module.exports = connect;
-
-
