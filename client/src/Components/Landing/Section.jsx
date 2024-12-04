@@ -13,20 +13,20 @@ function Section() {
             <div className="col-xl-3 col-lg-3 col-md-6">
               <div>
                 <h4 style={{ color: "black" }}>Bus Hire Cities</h4>
-                <ul className="list-unstyled">
+                <ul className="list-unstyled ">
                   <li>
                     <p className="text-decoration-none">
-                      Bus Hire in Ahmedabad
+                      Bus Hire in Kathmandu
                     </p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Mumbai</p>
+                    <p className="text-decoration-none">Bus Hire in Bhaktapur</p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Banglore</p>
+                    <p className="text-decoration-none">Bus Hire in Chitwan</p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Chennai</p>
+                    <p className="text-decoration-none">Bus Hire in Pokhara</p>
                   </li>
                 </ul>
               </div>
@@ -36,23 +36,23 @@ function Section() {
                 <h4 style={{ visibility: "collapse" }}>Bus Hire Cities</h4>
                 <ul className="list-unstyled">
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Pune</p>
+                    <p className="text-decoration-none">Bus Hire in Jhapa</p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">
-                      Bus Hire in Hyderabad
+                    <p className="text-decoration-none ">
+                      Bus Hire in Dharan
                     </p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Delhi</p>
+                    <p className="text-decoration-none">Bus Hire in Nepalgunj</p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Surat</p>
+                    <p className="text-decoration-none">Bus Hire in Lalitpur</p>
                   </li>
                 </ul>
               </div>
             </div>
-            <div className="col-xl-3 col-lg-3 col-md-6">
+            {/*<div className="col-xl-3 col-lg-3 col-md-6">
               <div>
                 <h4 style={{ color: "black" }}>Tempo Traveller in Cities</h4>
                 <ul className="list-unstyled">
@@ -107,7 +107,7 @@ function Section() {
                   </li>
                 </ul>
               </div>
-            </div>
+            </div>*/}
           </div>
         </div>
       </div>

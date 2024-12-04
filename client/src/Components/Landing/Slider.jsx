@@ -167,9 +167,9 @@ function Slider() {
             <div className="carousel-item active" data-bs-interval="3000">
               {" "}
               <img
-                src={require("../../Images/photo-1590523277543-a94d2e4eb00b.avif")}
+                src={require("../../Images/photo-1590523277543-a94d2e4eb00b.jpg")}
                 className="object-fit-cover"
-                style={{ height: "75vh", width: "100%" }}
+                style={{ height: "100vh", width: "100%" }}
                 alt="..."
                 onMouseOver={handelhover}
                 onMouseLeave={handelhoverout}
@@ -181,7 +181,7 @@ function Slider() {
                 src={require("../../Images/photo-1544091441-9cca7fbe8923.avif")}
                 className="object-fit-cover"
                 alt="..."
-                style={{ height: "75vh", width: "100%" }}
+                style={{ height: "100vh", width: "100%" }}
                 onMouseOver={handelhover}
                 onMouseLeave={handelhoverout}
               />
@@ -189,10 +189,10 @@ function Slider() {
             <div className="carousel-item" data-bs-interval="3000">
               {" "}
               <img
-                src={require("../../Images/photo-1600073957488-45273df3d014.avif")}
+                src={require("../../Images/photo-1607068891828-f16297950a66.jpg")}
                 className="object-fit-cover"
                 alt="..."
-                style={{ height: "75vh", width: "100%" }}
+                style={{ height: "100vh", width: "100%" }}
                 onMouseOver={handelhover}
                 onMouseLeave={handelhoverout}
               />
@@ -236,7 +236,7 @@ function Slider() {
         <div className={styles.data}>
           <input
             type="text"
-            placeholder="Source"
+            placeholder="From"
             value={source}
             onChange={(e) => {
               setsource(e.target.value);
@@ -262,7 +262,7 @@ function Slider() {
           )}
           <input
             type="text"
-            placeholder="Destination"
+            placeholder="To"
             value={destination}
             onChange={(e) => {
               setdestination(e.target.value);
@@ -295,7 +295,7 @@ function Slider() {
           />
           <button onClick={handleclicked}>Search</button>
         </div>
-        <div className={styles.infodiv}>
+        {/*<div className={styles.infodiv}>
           <div>
             {" "}
             <img
@@ -315,7 +315,7 @@ function Slider() {
               <button>know More</button>
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     </>
   );

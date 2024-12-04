@@ -14,18 +14,20 @@ const Navbar = () => {
     dispatch(logoutAPI());
     navigate("/");
     success("Logout Successfully");
-  };
-  return (
-    <nav className="navbar navbar-dark navbar-expand-lg bg-body-tertiary text-bg-primary">
+    };
+    return (
+      <nav className="navbar navbar-dark navbar-expand-lg bg-body-warning text-white bg-dark fixed-top ">
       <div className="container-fluid">
-        <a
-          className="navbar-brand"
+        
+      <a 
+          className="navbar-brand ms-5"
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/")}
         >
-          BlueBus
+          BusBuddy
         </a>
-        <button
+        <button 
+        
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
@@ -37,7 +39,7 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarScroll">
-          <ul className="navbar-nav me-auto my-2 my-lg-0">
+          <ul className="navbar-nav  mx-auto my-5 my-lg-auto">
             <li className="nav-item">
               <a
                 className="nav-link active"
@@ -54,14 +56,28 @@ const Navbar = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => navigate(`/myticket`)}
               >
-                My Tickets
+                Help
               </a>
             </li>
+
+            <li className="nav-item">
+              <a
+                className="nav-link active"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/myticket`)}
+              >
+                My Tickets
+              </a>
+            </li> 
+
           </ul>
+           
+
+           
           <div>
             {token ? (
               <button
-                className="btn btn-outline-success"
+                className="btn btn-outline-success me-5"
                 style={{
                   borderRadius: "10px",
                   border: "2px solid",
@@ -76,7 +92,7 @@ const Navbar = () => {
               <div>
                 {" "}
                 <button
-                  className="btn btn-outline-success"
+                  className="btn btn-outline-success me-5"
                   onClick={() => navigate("/signin")}
                   style={{
                     borderRadius: "10px",
@@ -85,7 +101,7 @@ const Navbar = () => {
                     color: "white",
                   }}
                 >
-                  Sign In
+                  Sign In 
                 </button>
               </div>
             )}
