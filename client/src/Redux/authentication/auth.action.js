@@ -12,7 +12,7 @@ export const loginAPI = (data, navigate) => async (dispatch) => {
     let response = await axios.post("https://blue-bus.onrender.com/user/login", data);
     // console.log(response);
     if (response.data.status === "Failed") {
-      error(response.data.message);
+      error(response.data.message); 
     } else {
       Cookies.set("jwttoken", response.data.message.token, {
         expires: new Date(new Date().getTime() + 60 * 60 * 1000),
