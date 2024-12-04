@@ -3,7 +3,7 @@ import styles from "../../Styles/landing.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { error } from "../../Utils/notification";
-import safty from "../../Images/safetyplus.svg"
+import safty from "../../Images/safetyplus.svg";
 
 function Slider() {
   const [hover, sethover] = useState(false);
@@ -70,7 +70,7 @@ function Slider() {
 
   const handleGetRequest = async () => {
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/city", {
+      let res = await axios.post("http://localhost:8080/city", {
         source,
       });
       res = res.data;
@@ -84,7 +84,7 @@ function Slider() {
 
   const handleGetRequestdes = async () => {
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/city", {
+      let res = await axios.post("http://localhost:8080/city", {
         destination,
       });
       res = res.data;
@@ -119,7 +119,7 @@ function Slider() {
 
   async function getcityinfo(source, destination, date) {
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/city/showcity", {
+      let res = await axios.post("http://localhost:8080/city/showcity", {
         source,
         destination,
         date,
@@ -163,7 +163,6 @@ function Slider() {
           data-bs-ride="carousel"
         >
           <div className="carousel-inner">
-
             <div className="carousel-item active" data-bs-interval="3000">
               {" "}
               <img
@@ -298,10 +297,7 @@ function Slider() {
         {/*<div className={styles.infodiv}>
           <div>
             {" "}
-            <img
-              src={safty}
-              alt="shield"
-            />
+            <img src={safty} alt="shield" />
           </div>
           <div>
             <h4>Introducing Safety+ Program</h4>

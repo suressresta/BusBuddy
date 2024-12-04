@@ -6,7 +6,6 @@ import { validateEmail, validateMobile } from "../Utils/formValidator";
 import { error } from "../Utils/notification";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { initPayment } from "./payment/razorpay";
 
 function Details() {
   const navigate = useNavigate();
@@ -38,8 +37,8 @@ function Details() {
     let amount = searchParams.get("amount");
     let token = Cookies.get("jwttoken");
     let userid = Cookies.get("userid");
-    // console.log(date, ticket, busid, amount, token, userid);
 
+    // Validation checks
     if (
       creds.name === "" ||
       creds.age === "" ||
@@ -60,29 +59,29 @@ function Details() {
       return error(isMobile.message);
     }
 
-    const { data } = await axios.post(
-      "https://blue-bus.onrender.com/api/payment/ticket",
-      {
-        amount: amount,
+    try {
+      const { data } = await axios.post("http://localhost:8080/order", {
+        busid,
+        date,
+        ticket,
+        amount,
+        user: creds,
+        token,
+        userid,
+      });
+
+      if (data.success) {
+        // On successful booking, navigate to the confirmation page
+        navigate("/booking-confirmation"); // Adjust to your desired confirmation route
+      } else {
+        error("Booking failed. Please try again.");
       }
-    );
-
-    let busdata = JSON.parse(sessionStorage.getItem("busData"));
-
-    initPayment(
-      busdata,
-      creds,
-      data,
-      date,
-      ticket,
-      busid,
-      userid,
-      amount,
-      token,
-      dispatch,
-      navigate
-    );
+    } catch (error) {
+      console.error(error);
+      error("Something went wrong, please try again.");
+    }
   }
+
   return (
     <div className={styles.details}>
       <form onSubmit={(e) => handleclick(e)}>
@@ -99,7 +98,7 @@ function Details() {
         </div>
         <div className="mb-3">
           <label htmlFor="age" className="form-label">
-            age
+            Age
           </label>
           <input
             name="age"
@@ -154,4 +153,5 @@ function Details() {
     </div>
   );
 }
+
 export default Details;

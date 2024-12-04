@@ -44,15 +44,15 @@ function SelectBus() {
   async function getdata(from, to, date) {
     // console.log(from, to, date);
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/bus/getall", {
+      let res = await axios.post("http://localhost:8080/bus/busavaliable", {
         from,
         to,
         date,
       });
       // console.log("jihii",res.data);
-      if(res.data.length===0) {
-        error("Cities Not Found. Try Mumbai To Bangluru");
-        return navigate("/")
+      if (res.data.length === 0) {
+        error("Cities Not Found ");
+        return navigate("/");
       }
       dispatch(saveDatafilter(res.data));
       setwentwrong(false);

@@ -3,8 +3,18 @@ const BusModel = require("../models/bus.model");
 
 const app = express.Router();
 
+// Route to get all cities
+app.get("/", async (req, res) => {
+  try {
+    const data = await BusModel.find({});
+    res.send(data);
+  } catch (error) {
+    return res.status(500).send({ status: "failed", data: error.message });
+  }
+});
+
+//Add the bus
 app.post("/addnew", async (req, res) => {
-  // console.log(req.body);
   try {
     let newbus = await BusModel.create({ ...req.body });
     // console.log(newbus);
@@ -14,7 +24,8 @@ app.post("/addnew", async (req, res) => {
   }
 });
 
-app.post("/getall", async (req, res) => {
+// Get if the bus is avaliable on the following date
+app.post("/busavaliable", async (req, res) => {
   // console.log(req.body);
   try {
     let sourceStr = req.body.from;
@@ -32,8 +43,8 @@ app.post("/getall", async (req, res) => {
   }
 });
 
+// Get the bus by its id
 app.post("/one", async (req, res) => {
-  // console.log("hi");
   try {
     let bus = await BusModel.find({ _id: req.body.id });
     return res.send(bus);
