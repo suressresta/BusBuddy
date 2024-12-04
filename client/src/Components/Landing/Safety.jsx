@@ -1,5 +1,8 @@
 import styles from "../../Styles/landing.module.css";
-const arr = [
+
+const  
+arr = [
+  
   {
     heading: "Sanitized Bus ",
     descriptions:
