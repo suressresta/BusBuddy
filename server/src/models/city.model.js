@@ -1,9 +1,21 @@
-const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
 
-const CitySchema = new Schema({
-  name: String,
-  state: String,
-});
-const CityModel = model("cities", CitySchema);
+const CitySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const CityModel = mongoose.model("City", CitySchema);
 
 module.exports = CityModel;

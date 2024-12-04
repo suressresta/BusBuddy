@@ -1,103 +1,121 @@
-[{
-  "_id": {
-    "$oid": "640082f21efcfc116f406aee"
+[
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406aee"
+    },
+    "name": "Mumbai",
+    "state": "Maharashtra"
   },
-  "name": "Mumbai",
-  "state": "Maharashtra"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406aef"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406aef"
+    },
+    "name": "Delhi",
+    "state": "Delhi"
   },
-  "name": "Delhi",
-  "state": "Delhi"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af0"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af0"
+    },
+    "name": "Bengaluru",
+    "state": "Karnataka"
   },
-  "name": "Bengaluru",
-  "state": "Karnataka"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af1"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af1"
+    },
+    "name": "Ahmedabad",
+    "state": "Gujarat"
   },
-  "name": "Ahmedabad",
-  "state": "Gujarat"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af2"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af2"
+    },
+    "name": "Hyderabad",
+    "state": "Telangana"
   },
-  "name": "Hyderabad",
-  "state": "Telangana"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af3"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af3"
+    },
+    "name": "Chennai",
+    "state": "Tamil Nadu"
   },
-  "name": "Chennai",
-  "state": "Tamil Nadu"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af4"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af4"
+    },
+    "name": "Kolkata",
+    "state": "West Bengal"
   },
-  "name": "Kolkata",
-  "state": "West Bengal"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af5"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af5"
+    },
+    "name": "Pune",
+    "state": "Maharashtra"
   },
-  "name": "Pune",
-  "state": "Maharashtra"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af6"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af6"
+    },
+    "name": "Jaipur",
+    "state": "Rajasthan"
   },
-  "name": "Jaipur",
-  "state": "Rajasthan"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af7"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af7"
+    },
+    "name": "Surat",
+    "state": "Gujarat"
   },
-  "name": "Surat",
-  "state": "Gujarat"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af8"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af8"
+    },
+    "name": "Lucknow",
+    "state": "Uttar Pradesh"
   },
-  "name": "Lucknow",
-  "state": "Uttar Pradesh"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406af9"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406af9"
+    },
+    "name": "Kanpur",
+    "state": "Uttar Pradesh"
   },
-  "name": "Kanpur",
-  "state": "Uttar Pradesh"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406afa"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406afa"
+    },
+    "name": "Nagpur",
+    "state": "Maharashtra"
   },
-  "name": "Nagpur",
-  "state": "Maharashtra"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406afb"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406afb"
+    },
+    "name": "Patna",
+    "state": "Bihar"
   },
-  "name": "Patna",
-  "state": "Bihar"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406afc"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406afc"
+    },
+    "name": "Indore",
+    "state": "Madhya Pradesh"
   },
-  "name": "Indore",
-  "state": "Madhya Pradesh"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406afd"
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406afd"
+    },
+    "name": "Thane",
+    "state": "Maharashtra"
   },
-  "name": "Thane",
-  "state": "Maharashtra"
-},{
-  "_id": {
-    "$oid": "640082f21efcfc116f406afe"
-  },
-  "name": "Bhopal",
-  "state": "Madhya Pradesh"
-}]
+  {
+    "_id": {
+      "$oid": "640082f21efcfc116f406afe"
+    },
+    "name": "Bhopal",
+    "state": "Madhya Pradesh"
+  }
+]
