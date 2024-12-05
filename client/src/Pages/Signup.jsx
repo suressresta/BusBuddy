@@ -94,7 +94,7 @@ function Signup() {
           <option value="female">Female</option>
         </select>
         <button
-          className="w-100 mt-3 btn btn-lg btn-primary"
+          className="w-100 mt-3 btn btn-lg  bg-dark text-white"
           onClick={handleSubmit}
         >
           Sign up
@@ -107,9 +107,10 @@ function Signup() {
               style={{
                 paddingLeft: 8,
                 textDecoration: "none",
+                color:"red",
               }}
             >
-              SignIn
+              Sign In
             </Link>
           </p>
         </div>
