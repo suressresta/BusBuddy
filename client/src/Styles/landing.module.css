@@ -14,11 +14,11 @@
   grid-template-columns: repeat(4, 1fr);
 }
 .data > input {
-  padding: 40px;
-  border-radius: 10px;
+  padding: 25px;
+  border-radius: 20px;
   margin-right: 5px;
   border: none;
-  outline-color: #1446A0;
+  outline-color: #ff9c00;
 }
 .data > input::placeholder {
   padding-left: 5px;
@@ -236,7 +236,7 @@
 .reviewmain {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   justify-items: center;
   background-color: #e5e5e5;
   padding: 18px 0;
