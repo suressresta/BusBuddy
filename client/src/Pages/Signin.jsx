@@ -83,7 +83,7 @@ function Signin() {
           <Link>Forgot Password</Link>
         </p>
         <button
-          className="w-100  btn btn-lg btn-primary"
+          className="w-100  btn btn-lg btn-warning"
           onClick={handleSubmit}
         >
           Sign In

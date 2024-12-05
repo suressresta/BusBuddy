@@ -92,7 +92,7 @@ const Navbar = () => {
               <div>
                 {" "}
                 <button
-                  className="btn btn-outline-success me-5"
+                  className="btn me-5"
                   onClick={() => navigate("/signin")}
                   style={{
                     borderRadius: "10px",
