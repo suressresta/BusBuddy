@@ -16,7 +16,7 @@ const Navbar = () => {
     success("Logout Successfully");
     };
     return (
-      <nav className="navbar navbar-dark navbar-expand-lg bg-body-warning text-white bg-dark fixed-top ">
+      <nav className="navbar navbar-dark navbar-expand-lg bg-body-warning text-white bg-dark bg-opacity-25 fixed-top ">
       <div className="container-fluid">
         
       <a 
@@ -24,7 +24,9 @@ const Navbar = () => {
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/")}
         >
-          BusBuddy
+          <h3>
+                  <span style={{ color: "#ff9c00" }}>Bus</span>Buddy
+                </h3>
         </a>
         <button 
         
@@ -50,12 +52,13 @@ const Navbar = () => {
                 Home
               </a>
             </li>
-            <li className="nav-item">
+            <li className="nav-item ">
               <a
-                className="nav-link active"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/myticket`)}
-              >
+                className="nav-link active "
+                style={{ cursor: "pointer", color:"#ff9c00", }}
+                onClick={() => navigate("/")}
+                
+              > 
                 Help
               </a>
             </li>
@@ -96,9 +99,9 @@ const Navbar = () => {
                   onClick={() => navigate("/signin")}
                   style={{
                     borderRadius: "10px",
-                    border: "2px solid",
+                    border: "2px solid #ff9c00",
                     marginRight: "8px",
-                    color: "white",
+                    color: "#ff9c00",
                   }}
                 >
                   Sign In 
