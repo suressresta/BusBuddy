@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import styles from "../Styles/details.module.css";
 import { validateEmail, validateMobile } from "../Utils/formValidator";
-import { error } from "../Utils/notification";
+import { error, success } from "../Utils/notification";
 import Cookies from "js-cookie";
 import axios from "axios";
 
@@ -59,23 +59,37 @@ function Details() {
       return error(isMobile.message);
     }
 
-    try {
-      const { data } = await axios.post("http://localhost:8080/order", {
-        busid,
-        date,
-        ticket,
-        amount,
-        user: creds,
-        token,
-        userid,
-      });
+    // Prepare the data to send in the POST request
+    const orderData = {
+      bus: busid, // Bus ID selected from URL params
+      ticketSummary: {
+        date: date, // Date selected from search params
+        ticket: ticket, // Ticket number from search params
+        amount: amount, // Amount from search params
+      },
+      userDetails: {
+        name: creds.name, // User name from form input
+        age: creds.age, // User age from form input
+        gender: creds.gender, // User gender from form input
+        email: creds.email, // User email from form input
+        phone: creds.phone, // User phone from form input
+      },
+      user: userid, // User ID from cookies
+    };
 
-      if (data.success) {
-        // On successful booking, navigate to the confirmation page
-        navigate("/booking-confirmation"); // Adjust to your desired confirmation route
-      } else {
-        error("Booking failed. Please try again.");
-      }
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8080/order",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add the token in the header for authorization
+          },
+        }
+      );
+      console.log("The data are:", data);
+      navigate("/");  
+      success("Ticket booked successfully");
     } catch (error) {
       console.error(error);
       error("Something went wrong, please try again.");
@@ -91,6 +105,7 @@ function Details() {
           </label>
           <input
             name="name"
+            value={creds.name}
             onChange={hanldeChange}
             type="text"
             className="form-control"
@@ -102,6 +117,7 @@ function Details() {
           </label>
           <input
             name="age"
+            value={creds.age}
             onChange={hanldeChange}
             type="number"
             className="form-control"
@@ -115,22 +131,22 @@ function Details() {
             name="gender"
             onChange={hanldeChange}
           >
-            <option selected>Select Your Gender</option>
+            <option value="">Select Your Gender</option>
             <option value="men">Men</option>
             <option value="women">Women</option>
           </select>
           <label htmlFor="floatingSelect">Gender</label>
         </div>
         <div className="mb-3">
-          <label htmlFor="exampleInputEmail1" className="form-label">
+          <label htmlFor="email" className="form-label">
             Email address
           </label>
           <input
             type="email"
             className="form-control"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
+            id="email"
             name="email"
+            value={creds.email}
             onChange={hanldeChange}
           />
         </div>
@@ -140,6 +156,7 @@ function Details() {
           </label>
           <input
             name="phone"
+            value={creds.phone}
             onChange={hanldeChange}
             type="number"
             className="form-control"

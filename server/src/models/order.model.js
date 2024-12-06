@@ -19,11 +19,7 @@ const orderSchema = new mongoose.Schema(
       ticket: reqString,
       amount: reqString,
     },
-    paymentDetails: {
-      orderId: reqString,
-      razorpayOrderId: reqString,
-      razorpayPaymentId: reqString,
-    },
+
     userDetails: {
       name: reqString,
       age: reqString,
