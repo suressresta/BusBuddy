@@ -17,7 +17,6 @@ app.post("/signup", async (req, res) => {
         message: "Please try with a different email",
       });
     }
-
     // Hash the password before saving
     req.body.password = await bcrypt.hash(req.body.password, 10);
 

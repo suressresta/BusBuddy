@@ -298,7 +298,7 @@ function Bookseat() {
                   <div className={styles.summarycontainer}>
                     <span className={styles.fareslb}>Amount</span>
                     <span className={styles.summaryvalue}>
-                      <span className={styles.summarycurrency}>INR</span>
+                      <span className={styles.summarycurrency}>NR</span>
                       <span>{ticket.length * ele.price}</span>
                     </span>
                   </div>

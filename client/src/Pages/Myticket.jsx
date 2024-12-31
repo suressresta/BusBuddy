@@ -26,9 +26,12 @@ function Myticket() {
 
   async function getdata(id) {
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/order/myticket", {
-        id,
-      });
+      let res = await axios.post(
+        "https://blue-bus.onrender.com/order/myticket",
+        {
+          id,
+        }
+      );
       // console.log(res);
       setdata(res.data);
     } catch (error1) {
@@ -45,9 +48,12 @@ function Myticket() {
   async function getdataToday() {
     let id = Cookies.get("userid");
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/order/myticket/today", {
-        id,
-      });
+      let res = await axios.post(
+        "https://blue-bus.onrender.com/order/myticket/today",
+        {
+          id,
+        }
+      );
       // console.log("today", res);
       settoday(res.data);
     } catch (error) {
@@ -87,9 +93,12 @@ function Myticket() {
   async function getdataPast() {
     let id = Cookies.get("userid");
     try {
-      let res = await axios.post("https://blue-bus.onrender.com/order/myticket/past", {
-        id,
-      });
+      let res = await axios.post(
+        "https://blue-bus.onrender.com/order/myticket/past",
+        {
+          id,
+        }
+      );
       // console.log("past", res);
       setPast(res.data);
     } catch (error) {
