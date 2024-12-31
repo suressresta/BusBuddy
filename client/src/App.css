@@ -2,6 +2,14 @@
   text-align: center;
 }
 
+body{
+    font-family: "Poppins", serif;
+    font-weight: 900;
+    font-style: normal;
+  }
+  
+
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -20,7 +28,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: calc(15px + 2vmin);
   color: white;
 }
 

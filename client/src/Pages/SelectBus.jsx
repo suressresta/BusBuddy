@@ -125,7 +125,7 @@ function SelectBus() {
                   <hr />
                   <div>
                     {" "}
-                    <h5>Price : ₹ {ele.price}</h5>
+                    <h5>Price : Rs. {ele.price}</h5>
                     <h5>
                       {Array(5)
                         .fill("")

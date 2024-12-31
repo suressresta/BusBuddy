@@ -81,7 +81,7 @@ function Footer() {
           <div className="d-flex justify-content-center">
             <div className="copyright">
               <p className={styles.companyinfo}>
-                2023 ibibogroup All rights reserved company.
+              ©Copyright 2024 <b><span style={{ color: "#ff9c00" }}>Bus</span>Buddy.com</b>
               </p>
             </div>
           </div>

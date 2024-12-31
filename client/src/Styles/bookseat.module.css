@@ -90,10 +90,11 @@
 
 .main {
   width: 80%;
+  
   display: flex;
   align-items: flex-start;
   margin: auto;
-  margin-top: 40px;
+  margin-top: 10%;
   margin-bottom: 50px;
 }
 

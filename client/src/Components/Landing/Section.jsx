@@ -3,6 +3,8 @@ function Section() {
     <>
       <div
         style={{
+          display: "flex",
+          justifyContent: "center",
           paddingTop: "15px",
           backgroundColor: "#e5e5e5",
           color: "grey",
@@ -10,17 +12,30 @@ function Section() {
       >
         <div className="container">
           <div className="row">
-            <div className="col-xl-3 col-lg-3 col-md-6">
+            <div className="col-xl-6 col-lg-4 col-md-6">
               <div>
-                <h4 style={{ color: "black" }}>Bus Hire Cities</h4>
+                <div className="cityBus">
+                  <h4
+                    style={{
+                      color: "black",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    Bus Hire Cities
+                  </h4>
+                </div>
+
                 <ul className="list-unstyled ">
                   <li>
                     <p className="text-decoration-none">
                       Bus Hire in Kathmandu
                     </p>
-                  </li>
+                  </li> 
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Bhaktapur</p>
+                    <p className="text-decoration-none">
+                      Bus Hire in Bhaktapur
+                    </p>
                   </li>
                   <li>
                     <p className="text-decoration-none">Bus Hire in Chitwan</p>
@@ -39,12 +54,12 @@ function Section() {
                     <p className="text-decoration-none">Bus Hire in Jhapa</p>
                   </li>
                   <li>
-                    <p className="text-decoration-none ">
-                      Bus Hire in Dharan
-                    </p>
+                    <p className="text-decoration-none ">Bus Hire in Dharan</p>
                   </li>
                   <li>
-                    <p className="text-decoration-none">Bus Hire in Nepalgunj</p>
+                    <p className="text-decoration-none">
+                      Bus Hire in Nepalgunj
+                    </p>
                   </li>
                   <li>
                     <p className="text-decoration-none">Bus Hire in Lalitpur</p>
