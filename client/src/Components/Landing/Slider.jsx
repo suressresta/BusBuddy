@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { error } from "../../Utils/notification";
 import safty from "../../Images/safetyplus.svg";
+import { toast } from "react-toastify";
 
 function Slider() {
   const [hover, sethover] = useState(false);
@@ -70,7 +71,7 @@ function Slider() {
 
   const handleGetRequest = async () => {
     try {
-      let res = await axios.post("http://localhost:8080/city", {
+      let res = await axios.post("http://localhost:8080/city/one", {
         source,
       });
       res = res.data;
@@ -84,7 +85,7 @@ function Slider() {
 
   const handleGetRequestdes = async () => {
     try {
-      let res = await axios.post("http://localhost:8080/city", {
+      let res = await axios.post("http://localhost:8080/city/one", {
         destination,
       });
       res = res.data;
@@ -132,10 +133,10 @@ function Slider() {
       } else {
         setsource("");
         setdestination("");
-        error("City Not Found");
+        toast.error("City Not Found");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("No Bus avaliable on that day");
     }
   }
 

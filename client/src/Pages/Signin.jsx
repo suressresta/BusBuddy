@@ -79,14 +79,14 @@ function Signin() {
             </span>
           </div>
         </div>
-        <p style={{ textAlign: "right", marginTop: "-10px", color:"red", }}>
+        <p style={{ textAlign: "right", marginTop: "-10px", color: "red" }}>
           <Link
-          
-          style={{
-            color:"red",
-          }}>
-          
-          Forgot Password</Link>
+            style={{
+              color: "red",
+            }}
+          >
+            Forgot Password
+          </Link>
         </p>
         <button
           className="w-100  btn btn-lg  bg-dark text-white"
@@ -98,12 +98,11 @@ function Signin() {
           <p>
             Dont Have Account?{" "}
             <Link
-            
               to={"/signup"}
               style={{
                 paddingLeft: 10,
                 textDecoration: "none",
-                color:"red",
+                color: "red",
               }}
             >
               SignUp

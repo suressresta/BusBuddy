@@ -1,19 +1,6 @@
-import {
-  applyMiddleware,
-  combineReducers,
-  compose,
-  legacy_createStore,
-} from "redux";
+import { applyMiddleware, compose, legacy_createStore } from "redux";
 import thunk from "redux-thunk";
-import { authReducer } from "../authentication/auth.reducer";
-import { filterReducer } from "../filter/filter.reducer";
-import { ticketReducer } from "../ticket/ticket.reducer";
-
-const rootReducer = combineReducers({
-  auth: authReducer,
-  filter: filterReducer,
-  ticket: ticketReducer,
-});
+import { rootReducer } from "./root"; // import the rootReducer from the rootReducer.js file
 
 const createCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
