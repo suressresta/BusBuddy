@@ -3,8 +3,8 @@
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
-  margin-top: 25px;
-  margin-bottom: 32px;
+  margin-top: 10%;
+  margin-bottom: 10%;
 }
 
 .filter {
@@ -83,11 +83,11 @@
   margin-top: 10px;
 }
 
-.wrong{
+.wrong {
   width: 100%;
   border: 5px solid;
 }
-.wrong > img{
+.wrong > img {
   width: 100%;
   object-fit: contain;
 }

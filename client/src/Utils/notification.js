@@ -15,7 +15,6 @@ export const success = (title) => {
 };
 
 export const error = (title) => {
-  // console.log(title);
   return toast.error(title, {
     position: toast.POSITION.TOP_CENTER,
     autoClose: 3000,
