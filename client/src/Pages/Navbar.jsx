@@ -16,7 +16,7 @@ const Navbar = () => {
     success("Logout Successfully");
     };
     return (
-      <nav className="navbar navbar-dark navbar-expand-lg bg-body-warning text-white bg-dark bg-opacity-25 fixed-top ">
+      <nav className="navbar navbar-dark navbar-expand-lg bg-body-warning text-white bg-dark bg-opacity-25  fixed-top ">
       <div className="container-fluid">
         
       <a 

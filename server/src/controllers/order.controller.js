@@ -6,25 +6,6 @@ const Order = require("../models/order.model");
 const moment = require("moment");
 const app = express.Router();
 
-// app.post("/", async (req, res) => {
-//   try {
-//     const order = await Order.create({ ...req.body });
-//     let ticketdata =
-//       req.body.ticketSummary.date +
-//       "@" +
-//       req.body.ticketSummary.ticket +
-//       "@" +
-//       req.body.userDetails.gender;
-//     // console.log(ticketdata);
-//     let filter = { _id: req.body.bus };
-//     let update = { $push: { seats: ticketdata } };
-//     const busUpdate = await BusModel.findOneAndUpdate(filter, update);
-//     return res.status(201).json(order);
-//   } catch (error) {
-//     // console.log(error.message);
-//     return res.status(500).json({ message: "Internal server error!" });
-//   }
-// });
 
 app.post("/", async (req, res) => {
   try {
@@ -42,6 +23,7 @@ app.post("/", async (req, res) => {
     const orderData = {
       ...req.body, // Include all the order data from the request body
       busDetails: {
+        date: busDetails.date,
         name: busDetails.companyname, // Ensure this matches the bus model field
         from: busDetails.from,
         to: busDetails.to,

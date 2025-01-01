@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import { error, success } from "../Utils/notification";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { toast } from "react-toastify";
 
 function Signup() {
   const initialData = {
@@ -26,30 +27,36 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (
       signUpcreds.email === "" ||
       signUpcreds.password === "" ||
       signUpcreds.gender === ""
     ) {
-      error("Plaese Fill All The Details");
-    } else {
-      try {
-        let response = await axios.post(
-          "https://blue-bus.onrender.com/user/signup",
-          signUpcreds
-        );
-        console.log(response);
-        if (response.data.status === "Failed") {
-          error(response.data.message);
-        } else {
-          navigate("/signin");
-          success(response.data.message);
-        }
-      } catch (error) {
-        console.log(error);
+      error("Please Fill All The Details");
+      return;
+    }
+
+    try {
+      let response = await axios.post(
+        "http://localhost:8080/user/signup",
+        signUpcreds
+      );
+
+      if (response.data.status === "Failed") {
+        error(response.data.message);
+        toast.error("Try again later");
+      } else {
+        navigate("/signin");
+        success("Signup Successful, please login.");
       }
+    } catch (error) {
+      toast.error(
+        "This email is already in use. Please try with a different email."
+      );
     }
   };
+
   return (
     <>
       <div className={styles.login}>
@@ -61,6 +68,7 @@ function Signup() {
             className="form-control"
             placeholder="Enter your email address"
             name="email"
+            value={signUpcreds.email}
             onChange={hanldeChange}
           />
         </div>
@@ -72,6 +80,7 @@ function Signup() {
               className="form-control"
               placeholder="Enter Your Password"
               name="password"
+              value={signUpcreds.password}
               onChange={hanldeChange}
             />
             <span
@@ -85,16 +94,17 @@ function Signup() {
         </div>
         <select
           name={"gender"}
+          value={signUpcreds.gender}
           onChange={hanldeChange}
-          class="form-select"
+          className="form-select"
           aria-label="Default select example"
         >
-          <option selected>Select Your Gender</option>
+          <option value="">Select Your Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
         <button
-          className="w-100 mt-3 btn btn-lg  bg-dark text-white"
+          className="w-100 mt-3 btn btn-lg bg-dark text-white"
           onClick={handleSubmit}
         >
           Sign up
@@ -103,11 +113,11 @@ function Signup() {
           <p>
             Already A User?{" "}
             <Link
-              to={"/signin"}
+              to="/signin"
               style={{
                 paddingLeft: 8,
                 textDecoration: "none",
-                color:"red",
+                color: "red",
               }}
             >
               Sign In

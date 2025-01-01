@@ -40,7 +40,6 @@ app.post("/add", async (req, res) => {
   }
 });
 
-
 // Route to search single cities based on 'destination' or 'source'
 app.post("/", async (req, res) => {
   try {
