@@ -1,12 +1,15 @@
+  
 .busdata {
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
   margin-top: 35px;
   margin-bottom: 35px;
+   
 }
 
 .btn {
@@ -93,7 +96,8 @@
   font-weight: 700;
   font-size: 0.875rem;
   text-align: right;
-  color: #3e3e52;  border-radius: 10px;
+  color: #3e3e52;
+  border-radius: 10px;
 }
 .summarycurrency {
   margin-right: 5px;
@@ -193,7 +197,6 @@
     transform: translate(0);
   }
 }
-
 
 @media all and (min-width: 319px) and (max-width: 579px) {
   .busdata {

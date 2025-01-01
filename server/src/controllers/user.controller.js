@@ -54,7 +54,10 @@ app.post("/login", async (req, res) => {
     }
 
     // Generate JWT token excluding sensitive data
-    const token = jwt.sign({ id: user._id, email: user.email }, "1234");
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET
+    );
 
     return res.status(200).send({
       status: "Success",

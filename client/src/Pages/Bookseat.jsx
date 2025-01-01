@@ -268,7 +268,6 @@ function Bookseat() {
                   <h5>
                     {ele?.companyname.charAt(0).toUpperCase() +
                       ele?.companyname.slice(1)}{" "}
-                    Travels
                   </h5>
                   <div>
                     {" "}
@@ -298,7 +297,7 @@ function Bookseat() {
                   <div className={styles.summarycontainer}>
                     <span className={styles.fareslb}>Amount</span>
                     <span className={styles.summaryvalue}>
-                      <span className={styles.summarycurrency}>NR</span>
+                      <span className={styles.summarycurrency}>RS</span>
                       <span>{ticket.length * ele.price}</span>
                     </span>
                   </div>

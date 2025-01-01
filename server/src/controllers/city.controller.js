@@ -13,10 +13,10 @@ app.get("/", async (req, res) => {
   }
 });
 
-// Route to add a new city
-app.post("/add", async (req, res) => {
+// // Route to add a new city
+app.post("/", async (req, res) => {
   try {
-    const { name, state } = req.body;
+    const { name, province } = req.body;
 
     // Check if the city already exists
     let existingCity = await CityModel.findOne({ name: name });
@@ -28,7 +28,7 @@ app.post("/add", async (req, res) => {
     // Create a new city object
     const newCity = new CityModel({
       name,
-      state,
+      province,
     });
 
     // Save the new city to the database
@@ -40,9 +40,8 @@ app.post("/add", async (req, res) => {
   }
 });
 
-
 // Route to search single cities based on 'destination' or 'source'
-app.post("/", async (req, res) => {
+app.post("/one", async (req, res) => {
   try {
     let q;
     // Check if 'destination' or 'source' is provided in the request body
@@ -110,7 +109,6 @@ app.post("/showcity", async (req, res) => {
 });
 
 module.exports = app;
-
 
 // const express = require("express");
 // const CityModel = require("../models/city.model");
