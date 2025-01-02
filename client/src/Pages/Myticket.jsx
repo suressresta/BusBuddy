@@ -29,7 +29,7 @@ function Myticket() {
       let res = await axios.post("http://localhost:8080/order/myticket", {
         id,
       });
-      // console.log(res);
+      console.log(res);
       setdata(res.data);
     } catch (error1) {
       Cookies.remove("jwttoken");
@@ -44,6 +44,7 @@ function Myticket() {
 
   async function getdataToday() {
     let id = Cookies.get("userid");
+
     try {
       let res = await axios.post("http://localhost:8080/order/myticket/today", {
         id,
@@ -71,7 +72,7 @@ function Myticket() {
           id,
         }
       );
-      // console.log("upcoming", res);
+      console.log("upcoming", res);
       setUpcoming(res.data);
     } catch (error) {
       console.log(error);
@@ -90,10 +91,10 @@ function Myticket() {
       let res = await axios.post("http://localhost:8080/order/myticket/past", {
         id,
       });
-      // console.log("past", res);
+      console.log("past", res);
       setPast(res.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       error("Session Expired Please Sign In Again");
       dispatch(logoutAPI());
       navigate("/");
@@ -108,14 +109,18 @@ function Myticket() {
     let userid1 = Cookies.get("userid");
     try {
       let res = await axios.delete(
-        `http://http://localhost:8080/order/oneorder/:${userid}`
+        `http://localhost:8080/order/oneorder/${ele._id}`
       );
       getdata(userid1);
+      getdataToday();
+      getdataUpcoming();
+      getdataPast();
       success("Ticket Cancelled Successfully");
     } catch (error1) {
       error(error1.message);
     }
   }
+
   return (
     <div style={{ marginTop: "8%" }}>
       <nav style={{ height: "100%" }}>
