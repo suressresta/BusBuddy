@@ -6,6 +6,7 @@ import { validateEmail, validateMobile } from "../Utils/formValidator";
 import { error, success } from "../Utils/notification";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function Details() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function Details() {
     let amount = searchParams.get("amount");
     let token = Cookies.get("jwttoken");
     let userid = Cookies.get("userid");
+    console.log("User ID from cookies:", userid);
 
     // Validation checks
     if (
@@ -76,6 +78,7 @@ function Details() {
       },
       user: userid, // User ID from cookies
     };
+    console.log(orderData);
 
     try {
       const { data } = await axios.post(
@@ -88,11 +91,11 @@ function Details() {
         }
       );
       console.log("The data are:", data);
-      navigate("/");  
+      navigate("/");
       success("Ticket booked successfully");
     } catch (error) {
       console.error(error);
-      error("Something went wrong, please try again.");
+      toast.error("Something went wrong, please try again.");
     }
   }
 

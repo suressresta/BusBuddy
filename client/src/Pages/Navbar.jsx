@@ -15,12 +15,16 @@ const Navbar = () => {
     dispatch(logoutAPI());
     navigate("/");
     success("Logout Successfully");
-  };
-
-  return (
-    <nav className="bg-gray-800 bg-opacity-25 fixed top-0 left-0 w-full z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" className="text-white text-2xl font-bold no-underline">
+    };
+    return (
+      <nav className="navbar navbar-dark navbar-expand-lg bg-body-warning text-white bg-dark bg-opacity-25  fixed-top ">
+      <div className="container-fluid">
+        
+      <a 
+          className="navbar-brand ms-5"
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/")}
+        >
           <h3>
             <span className="text-orange-500 ">Bus</span>Buddy
           </h3>

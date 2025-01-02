@@ -9,6 +9,7 @@ import { removeall } from "../Redux/ticket/ticket.action";
 import Filters from "../Components/Seats/Filters";
 import { useDispatch, useSelector } from "react-redux";
 import { error } from "../Utils/notification";
+
 function SelectBus() {
   let [searchParams, setSearchParams] = useSearchParams();
   const [wentwrong, setwentwrong] = useState(false);
@@ -20,7 +21,7 @@ function SelectBus() {
 
   useEffect(() => {
     dispatch(removeall());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     let from = searchParams.get("from");
@@ -39,22 +40,22 @@ function SelectBus() {
     } else {
       getdata(from, to, date);
     }
-  }, []);
+  }, [searchParams]);
 
   async function getdata(from, to, date) {
-    // console.log(from, to, date);
     try {
       let res = await axios.post("http://localhost:8080/bus/busavaliable", {
         from,
         to,
         date,
       });
-      // console.log("jihii",res.data);
-      if (res.data.length === 0) {
-        error("Cities Not Found ");
+
+      if (res.data.data.length === 0) {
+        error("Cities Not Found");
         return navigate("/");
       }
-      dispatch(saveDatafilter(res.data));
+
+      dispatch(saveDatafilter(res.data.data));
       setwentwrong(false);
     } catch (error) {
       console.log(error.message);
@@ -78,73 +79,64 @@ function SelectBus() {
       ) : (
         <div className={styles.main}>
           <div className={styles.filter}>
-            <h5
-              style={{
-                textAlign: "left",
-                marginLeft: "25px",
-              }}
-            >
-              FILTERS
-            </h5>
+            <h5 style={{ textAlign: "left", marginLeft: "25px" }}>FILTERS</h5>
             <hr />
             <Filters />
             <hr />
           </div>
           <div className={styles.busdata}>
-            {dataredux?.map((ele, i) => {
-              return (
-                <div key={i}>
-                  <h5>
-                    {ele.companyname.charAt(0).toUpperCase() +
-                      ele.companyname.slice(1)}{" "}
-                    Travels
-                  </h5>
-                  <div>
-                    {" "}
-                    <p>{ele.from}</p>
-                    <p>
-                      <BiArrowFromLeft />
-                    </p>
-                    <p>{ele.to}</p>
-                  </div>{" "}
-                  <div>
-                    {" "}
-                    {ele.aminites.map((e, i) => (
-                      <div key={i}>
-                        {" "}
-                        <p>{e}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <hr />
-                  <h6>Arrival Time : {ele.arrival}</h6>
-                  <h6>Departure Time : {ele.departure}</h6>
-                  <hr />
-                  <h6>Email : {ele.email}</h6>
-                  <h6>Phone : {ele.phone}</h6>
-                  <hr />
-                  <div>
-                    {" "}
-                    <h5>Price : Rs. {ele.price}</h5>
+            {/* Ensure dataredux is an array before using map */}
+            {Array.isArray(dataredux) &&
+              dataredux.map((ele, i) => {
+                return (
+                  <div key={i}>
                     <h5>
-                      {Array(5)
-                        .fill("")
-                        .map((_, i) => (
-                          <AiTwotoneStar
-                            key={i}
-                            color={i < ele.rating ? "#FFED00" : "gray"}
-                          />
-                        ))}
+                      {ele.companyname.charAt(0).toUpperCase() +
+                        ele.companyname.slice(1)}{" "}
                     </h5>
+                    <div>
+                      <p>{ele.from}</p>
+                      <p>
+                        <BiArrowFromLeft />
+                      </p>
+                      <p>{ele.to}</p>
+                    </div>
+                    <div>
+                      {ele.amenities?.map((e, i) => (
+                        <div key={i}>
+                          <p>{e}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <hr />
+                    <h6>Arrival Time : {ele.arrival}</h6>
+                    <h6>Departure Time : {ele.departure}</h6>
+                    <hr />
+                    <h6>Email : {ele.email}</h6>
+                    <h6>Phone : {ele.phone}</h6>
+                    <hr />
+                    <div>
+                      <h5>Price : RS {ele.price}</h5>
+                      <h5>
+                        {Array(5)
+                          .fill("")
+                          .map((_, i) => (
+                            <AiTwotoneStar
+                              key={i}
+                              color={i < ele.rating ? "#FFED00" : "gray"}
+                            />
+                          ))}
+                      </h5>
+                    </div>
+                    <button onClick={() => handlebook(ele)}>View Seats</button>
                   </div>
-                  <button onClick={() => handlebook(ele)}>View Seats</button>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       )}
     </>
   );
 }
+
 export default SelectBus;

@@ -36,7 +36,7 @@
   gap: 20px;
 }
 .btn {
-  background-color: #1446A0;
+  background-color: #1446a0;
   border-radius: 10px;
   color: white;
   padding: 5px;
@@ -61,7 +61,7 @@
 }
 .busdata > div > button {
   width: 100%;
-  background-color: #1446A0;
+  background-color: #1446a0;
   color: white;
   border: none;
   padding: 5px 15px;
@@ -96,6 +96,7 @@
   margin: auto;
   margin-top: 10%;
   margin-bottom: 50px;
+  padding-top: 6%;
 }
 
 .seatlb {
@@ -164,7 +165,9 @@
     width: 90%;
     height: max-content;
     margin: auto;
-    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px,
+      rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px,
+      rgba(0, 0, 0, 0.07) 0px 16px 16px;
     padding: 5px;
   }
   .seats > div {
@@ -192,7 +195,7 @@
     justify-content: center;
   }
 
-  .doublerow>div{
+  .doublerow > div {
     display: flex;
     width: 35px;
     height: 20px;
