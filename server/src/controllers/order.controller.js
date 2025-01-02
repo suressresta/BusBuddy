@@ -104,67 +104,68 @@ app.post("/myticket", async (req, res) => {
 });
 
 app.delete("/oneorder/:id", async (req, res) => {
-  let id = req.params.id.split(":")[1];
-  // console.log(id);
+  let id = req.params.id; // Now we are using the order ID
   try {
-    const order = await Order.findOneAndDelete({ user: id });
-    return res.status(201).json(order);
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error!" });
-  }
-});
-
-app.post("/myticket/today", async (req, res) => {
-  const currentDate = new Date();
-  const userId = req.body.id; // Ensure you pass the user ID in the request body
-
-  // Set the time to the start of the day for today's comparison (00:00:00)
-  currentDate.setHours(0, 0, 0, 0);
-
-  try {
-    // Find orders where the user ID matches and the ticket date is today
-    const orders = await Order.find({
-      user: userId, // Filter by the user ID
-      "ticketSummary.date": {
-        $gte: currentDate, // greater than or equal to today's date
-        $lt: new Date(currentDate).setHours(23, 59, 59, 999), // less than the end of today (23:59:59)
-      },
-    });
-
-    if (orders.length === 0) {
-      return res.status(404).json({ message: "No orders found for today" });
+    const order = await Order.findByIdAndDelete(id); // Find and delete the order by its ID
+    if (!order) {
+      return res.status(404).json({ message: "Order not found!" }); // If the order does not exist
     }
-
-    return res.status(200).json(orders);
+    return res.status(200).json({ message: "Order deleted sucessfully" }); // Return the deleted order with status 200
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: "Internal server error!" });
   }
 });
-
 
 // app.post("/myticket/today", async (req, res) => {
-//   // console.log("hi", req.body);
-//   const date = JSON.stringify(new Date()).split("T")[0].split('"')[1];
-//   // console.log("bye", date);
+//   const currentDate = new Date();
+//   const userId = req.body.id; // Ensure you pass the user ID in the request body
+
+//   // Set the time to the start of the day for today's comparison (00:00:00)
+//   currentDate.setHours(0, 0, 0, 0);
+
 //   try {
-//     const order = await Order.find();
-//     // console.log(order);
-//     let data = order.filter((ele) => {
-//       let orderDate = JSON.stringify(ele.ticketSummary.date)
-//         .split("T")[0]
-//         .split('"')[1];
-//       if (orderDate === date) {
-//         return ele;
-//       }
+//     // Find orders where the user ID matches and the ticket date is today
+//     const orders = await Order.find({
+//       user: userId, // Filter by the user ID
+//       "ticketSummary.date": {
+//         $gte: currentDate, // greater than or equal to today's date
+//         $lt: new Date(currentDate).setHours(23, 59, 59, 999), // less than the end of today (23:59:59)
+//       },
 //     });
-//     // console.log(data);
-//     return res.status(201).json(data);
+
+//     if (orders.length === 0) {
+//       return res.status(404).json({ message: "No orders found for today" });
+//     }
+
+//     return res.status(200).json(orders);
 //   } catch (error) {
-//     // console.log(error);
+//     console.error(error);
 //     return res.status(500).json({ message: "Internal server error!" });
 //   }
 // });
+
+app.post("/myticket/today", async (req, res) => {
+  // console.log("hi", req.body);
+  const date = JSON.stringify(new Date()).split("T")[0].split('"')[1];
+  // console.log("bye", date);
+  try {
+    const order = await Order.find();
+    // console.log(order);
+    let data = order.filter((ele) => {
+      let orderDate = JSON.stringify(ele.ticketSummary.date)
+        .split("T")[0]
+        .split('"')[1];
+      if (orderDate === date) {
+        return ele;
+      }
+    });
+    // console.log(data);
+    return res.status(201).json(data);
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({ message: "Internal server error!" });
+  }
+});
 
 app.post("/myticket/upcoming", async (req, res) => {
   const currentDate = new Date();
@@ -211,7 +212,8 @@ app.post("/myticket/upcoming", async (req, res) => {
 // });
 
 app.post("/myticket/past", async (req, res) => {
-  const currentDate = new Date();
+  const currentDate = JSON.stringify(new Date()).split("T")[0].split('"')[1];
+
   const userId = req.body.id; // Assuming userId is passed in the request body
 
   try {
@@ -223,7 +225,7 @@ app.post("/myticket/past", async (req, res) => {
     // Find orders for the specific user and where the ticket date is in the past
     const orders = await Order.find({
       user: userId, // filter by user ID
-      "ticketSummary.date": { $lt: currentDate }, // filter by past date
+      "ticketSummary.date": { $lt: new Date(currentDate) }, // filter by past date
     });
 
     if (orders.length === 0) {
