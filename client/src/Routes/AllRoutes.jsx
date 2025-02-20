@@ -9,6 +9,9 @@ import Signup from "../Pages/Signup";
 import Myticket from "../Pages/Myticket";
 import { Private } from "./Private";
 import Bookseat from "../Pages/Bookseat";
+import EditTicket from "../Pages/EditMyTicket";
+import EditDetails from "../Pages/EditDetails";
+import Payment from "../Pages/Payment";
 
 function AllRoutes() {
   return (
@@ -40,6 +43,30 @@ function AllRoutes() {
           element={
             <Private>
               <Myticket />
+            </Private>
+          }
+        />
+        <Route
+          path="/edit_ticket/:id"
+          element={
+            <Private>
+              <EditTicket />
+            </Private>
+          }
+        />
+        <Route
+          path="/edit_details/:id"
+          element={
+            <Private>
+              <EditDetails />
+            </Private>
+          }
+        />
+        <Route
+          path="/payment"
+          element={
+            <Private>
+              <Payment />
             </Private>
           }
         />

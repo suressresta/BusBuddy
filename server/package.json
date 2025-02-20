@@ -18,6 +18,7 @@
     "moment": "^2.29.4",
     "mongoose": "^7.0.0",
     "nodemon": "^2.0.20",
-    "razorpay": "^2.8.6"
+    "razorpay": "^2.8.6",
+    "uuid": "^11.0.5"
   }
 }

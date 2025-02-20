@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import styles from "../Styles/login.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { loginAPI } from "../Redux/authentication/auth.action";
@@ -11,10 +10,12 @@ function Signin() {
     (state) => state.auth.data.isAuthenticated
   );
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (isAuthenticated) {
       if (location.state && location.state.from) {
-        // console.log(location.state.from);
         navigate(location.state.from, { replace: true });
       } else {
         navigate("/");
@@ -26,10 +27,9 @@ function Signin() {
     email: "",
     password: "",
   };
+
   const [signUpcreds, setsignUpcreds] = useState(initialData);
   const [showpassword, setshowpassword] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const hanldeChange = (e) => {
     const { name, value } = e.target;
@@ -47,70 +47,94 @@ function Signin() {
   };
 
   return (
-    <>
-      <div className={styles.login}>
-        <h1 className="h3 mb-3 fw-bold">Sign In</h1>
-        <div>
-          <p style={{ textAlign: "left", marginBottom: "0px" }}>Email</p>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-6">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full sm:w-96">
+        <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+          Sign In
+        </h1>
+
+        {/* Email Input */}
+        <div className="mb-4 ">
+          <label
+            className="block text-gray-700 text-sm font-medium mb-2"
+            htmlFor="email"
+          >
+            Email
+          </label>
           <input
             type="email"
-            className="form-control"
-            placeholder="Enter your email address"
+            id="email"
             name="email"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            placeholder="Enter your email address"
+            value={signUpcreds.email}
             onChange={hanldeChange}
           />
         </div>
-        <p style={{ textAlign: "left", marginBottom: "0px" }}>Password</p>
-        <div className="form-floating">
-          <div className="input-group mb-3">
+
+        {/* Password Input */}
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-medium mb-2"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <div className="relative">
             <input
               type={showpassword ? "text" : "password"}
-              className="form-control"
-              placeholder="Enter Your Password"
+              id="password"
               name="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              placeholder="Enter your password"
+              value={signUpcreds.password}
               onChange={hanldeChange}
             />
             <span
-              className="input-group-text"
-              style={{ cursor: "pointer" }}
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
               onClick={() => setshowpassword(!showpassword)}
             >
-              {showpassword ? <AiFillEye /> : <AiFillEyeInvisible />}
+              {showpassword ? (
+                <AiFillEye size={20} />
+              ) : (
+                <AiFillEyeInvisible size={20} />
+              )}
             </span>
           </div>
         </div>
-        <p style={{ textAlign: "right", marginTop: "-10px", color: "red" }}>
+
+        {/* Forgot Password Link */}
+        <div className="text-right mb-4">
           <Link
-            style={{
-              color: "red",
-            }}
+            to="/forgot-password"
+            className="text-sm text-red-500 hover:underline"
           >
-            Forgot Password
+            Forgot Password?
           </Link>
-        </p>
+        </div>
+
+        {/* Sign In Button */}
         <button
-          className="w-100  btn btn-lg  bg-dark text-white"
           onClick={handleSubmit}
+          className="w-full py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300"
         >
           Sign In
         </button>
-        <div style={{ textAlign: "center", marginTop: "15px" }}>
-          <p>
-            Dont Have Account?{" "}
+
+        {/* Sign Up Link */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
             <Link
-              to={"/signup"}
-              style={{
-                paddingLeft: 10,
-                textDecoration: "none",
-                color: "red",
-              }}
+              to="/signup"
+              className="text-sm text-yellow-500 hover:underline"
             >
-              SignUp
+              Sign Up
             </Link>
           </p>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
