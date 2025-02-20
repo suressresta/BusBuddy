@@ -3,22 +3,25 @@ const BusModel = require("../models/bus.model");
 
 const app = express.Router();
 
-// Route to get all cities
+// Route to get all bus
 app.get("/", async (req, res) => {
   try {
-    const data = await BusModel.find({});
+    const data = await BusModel.find({}).sort({ _id: -1 });
+
     return res.send({ status: "success", data: data });
   } catch (error) {
     return res.status(500).send({ status: "failed", data: error.message });
   }
 });
 
-app.post("/one", async (req, res) => {
+// Bus by ID
+app.post("/:id", async (req, res) => {
+  const { id } = req.params;
   try {
-    let bus = await BusModel.find({ _id: req.body.id });
-    return res.send(bus);
+    let bus = await BusModel.findById(id);
+    return res.status(201).json(bus);
   } catch (error) {
-    return res.send(error.message);
+    return res.status(404).json(error.message);
   }
 });
 
@@ -26,8 +29,7 @@ app.post("/one", async (req, res) => {
 app.post("/", async (req, res) => {
   try {
     let newbus = await BusModel.create({ ...req.body });
-    // console.log(newbus);
-    return res.send(newbus);
+    return res.status(201).json({ status: "200", data: newbus });
   } catch (error) {
     return res.send(error.message);
   }
@@ -38,10 +40,8 @@ app.post("/busavaliable", async (req, res) => {
   try {
     let { from, to, date, amenities } = req.body;
 
-    // Initialize query object
     let query = {};
 
-    // Check if 'from' and 'to' fields are provided and format them
     if (from) {
       let source =
         from.trim().charAt(0).toUpperCase() +
@@ -104,6 +104,20 @@ app.delete("/:id", async (req, res) => {
   } catch (error) {
     // Return any errors that occur
     return res.status(500).send({ status: "failed", data: error.message });
+  }
+});
+
+app.put("/:id", async (req, res) => {
+  try {
+    const data = await BusModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.status(201).json({
+      message: "Bus updated sucessfully",
+      data: data,
+    });
+  } catch (error) {
+    res.status(500).send("Error in updating bus");
   }
 });
 

@@ -5,19 +5,22 @@ const port = process.env.PORT || 8080;
 
 const cityRouter = require("./src/controllers/city.controller");
 const busRouter = require("./src/controllers/bus.controller");
-const userRouter=require("./src/controllers/user.controller");
-const orderRouter=require("./src/controllers/order.controller")
+const userRouter = require("./src/controllers/user.controller");
+const orderRouter = require("./src/controllers/order.controller");
+const routeRouter = require("./src/controllers/route.controller");
+const paymentRouter = require("./src/controllers/payment.controller");
 
 const connect = require("./src/configs/db");
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/user",userRouter)
+app.use("/user", userRouter);
 app.use("/city", cityRouter);
 app.use("/bus", busRouter);
 app.use("/order", orderRouter);
-
+app.use("/route", routeRouter);
+app.use("/payment", paymentRouter);
 
 app.listen(port, async () => {
   try {

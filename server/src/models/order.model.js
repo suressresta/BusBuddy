@@ -4,39 +4,31 @@ const reqString = { type: String, required: true };
 
 const orderSchema = new mongoose.Schema(
   {
-    busDetails: {
-      name: reqString,
-      from: reqString,
-      to: reqString,
-      contactemail: reqString,
-      contactphone: reqString,
-      arrival: reqString,
-      departure: reqString,
-    },
-
-    ticketSummary: {
-      date: Date,
-      ticket: reqString,
-      amount: reqString,
-    },
-
     userDetails: {
       name: reqString,
-      age: reqString,
       gender: reqString,
-      email: reqString,
       phone: reqString,
+      age: reqString,
+      email: reqString,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "Users",
       required: true,
     },
-    bus: {
+    route: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "bus",
+      ref: "route",
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["pending", "confirmed", "completed", "refunded"],
+      default: "pending",
+    },
+    seatNumber: { type: [String], required: true },
+    totalAmount: { type: Number, required: true },
+    paymentMethod: { type: String, default: "esewa" },
   },
   {
     versionKey: false,
@@ -44,6 +36,4 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-const order = mongoose.model("orderss", orderSchema);
-
-module.exports = order;
+module.exports = mongoose.model("Order", orderSchema);

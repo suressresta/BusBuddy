@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import styles from "../Styles/details.module.css";
 import { validateEmail, validateMobile } from "../Utils/formValidator";
@@ -7,6 +7,9 @@ import { error, success } from "../Utils/notification";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { PostRequest } from "../plugins/https";
+import { addOrder } from "../Redux/order/reducer";
+import { clearSeat } from "../Redux/order/action";
 
 function Details() {
   const navigate = useNavigate();
@@ -30,12 +33,13 @@ function Details() {
     });
   }
 
+  const amount = useSelector((state) => state.order.totalPrice);
+  const seat = useSelector((state) => state.order.seats);
+
   async function handleclick(e) {
     e.preventDefault();
-    let busid = params.id;
-    let date = searchParams.get("date");
-    let ticket = searchParams.get("ticket");
-    let amount = searchParams.get("amount");
+    let routeId = params.id;
+
     let token = Cookies.get("jwttoken");
     let userid = Cookies.get("userid");
     console.log("User ID from cookies:", userid);
@@ -60,37 +64,31 @@ function Details() {
     if (!isMobile.status) {
       return error(isMobile.message);
     }
-
+    if (amount <= 0) {
+      alert("Please Try Again");
+      navigate(-1); // Navigate back to the previous page
+      return; // Prevent further execution if the amount is invalid
+    }
     // Prepare the data to send in the POST request
     const orderData = {
-      bus: busid, // Bus ID selected from URL params
-      ticketSummary: {
-        date: date, // Date selected from search params
-        ticket: ticket, // Ticket number from search params
-        amount: amount, // Amount from search params
-      },
+      route: routeId,
       userDetails: {
-        name: creds.name, // User name from form input
-        age: creds.age, // User age from form input
-        gender: creds.gender, // User gender from form input
-        email: creds.email, // User email from form input
-        phone: creds.phone, // User phone from form input
+        name: creds.name,
+        age: creds.age,
+        gender: creds.gender,
+        email: creds.email,
+        phone: creds.phone,
       },
-      user: userid, // User ID from cookies
+      user: userid,
+      totalAmount: amount,
+      seatNumber: seat,
     };
-    console.log(orderData);
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:8080/order",
-        orderData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add the token in the header for authorization
-          },
-        }
-      );
-      console.log("The data are:", data);
+      dispatch(addOrder(orderData));
+      dispatch(clearSeat());
+
+      console.log("The data are:", orderData);
       navigate("/");
       success("Ticket booked successfully");
     } catch (error) {

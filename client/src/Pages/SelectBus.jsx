@@ -9,6 +9,7 @@ import { removeall } from "../Redux/ticket/ticket.action";
 import Filters from "../Components/Seats/Filters";
 import { useDispatch, useSelector } from "react-redux";
 import { error } from "../Utils/notification";
+import { getRouteId } from "../Redux/route/reducer";
 
 function SelectBus() {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -18,7 +19,7 @@ function SelectBus() {
   const dispatch = useDispatch();
 
   const dataredux = useSelector((state) => state.filter.data);
-
+  console.log("Data from redux:", dataredux);
   useEffect(() => {
     dispatch(removeall());
   }, [dispatch]);
@@ -43,13 +44,17 @@ function SelectBus() {
   }, [searchParams]);
 
   async function getdata(from, to, date) {
+    const lowerFrom = from.toLowerCase();
+    const lowerTo = to.toLowerCase();
+    console.log(from, to, date);
     try {
-      let res = await axios.post("http://localhost:8080/bus/busavaliable", {
-        from,
-        to,
-        date,
+      let res = await axios.post("http://localhost:8080/route/busRoute", {
+        from: lowerFrom,
+        to: lowerTo,
+        date: date,
       });
 
+      console.log(res);
       if (res.data.data.length === 0) {
         error("Cities Not Found");
         return navigate("/");
@@ -64,10 +69,12 @@ function SelectBus() {
   }
 
   async function handlebook(ele) {
+    console.log(ele._id);
     navigate({
       pathname: `/bookticket/${ele._id}`,
       search: `?&date=${searchParams.get("date")}`,
     });
+    dispatch(getRouteId(ele._id));
   }
 
   return (
@@ -91,8 +98,12 @@ function SelectBus() {
                 return (
                   <div key={i}>
                     <h5>
-                      {ele.companyname.charAt(0).toUpperCase() +
-                        ele.companyname.slice(1)}{" "}
+                      <h5>
+                        {ele.bus.companyName
+                          ? ele.bus.companyName.charAt(0).toUpperCase() +
+                            ele.bus.companyName.slice(1)
+                          : "Unknown Company"}
+                      </h5>
                     </h5>
                     <div>
                       <p>{ele.from}</p>
@@ -112,12 +123,12 @@ function SelectBus() {
                     <h6>Arrival Time : {ele.arrival}</h6>
                     <h6>Departure Time : {ele.departure}</h6>
                     <hr />
-                    <h6>Email : {ele.email}</h6>
-                    <h6>Phone : {ele.phone}</h6>
+                    <h6>Email : {ele.bus.email}</h6>
+                    <h6>Phone : {ele.bus.phone}</h6>
                     <hr />
                     <div>
                       <h5>Price : RS {ele.price}</h5>
-                      <h5>
+                      <div className="flex items-center justify-center pb-2">
                         {Array(5)
                           .fill("")
                           .map((_, i) => (
@@ -126,7 +137,7 @@ function SelectBus() {
                               color={i < ele.rating ? "#FFED00" : "gray"}
                             />
                           ))}
-                      </h5>
+                      </div>
                     </div>
                     <button onClick={() => handlebook(ele)}>View Seats</button>
                   </div>

@@ -1,319 +1,237 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import EachDeckSeat from "../Components/Seats/EachDeckSeat";
-import styles from "../Styles/bookseat.module.css";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { MdOutlineChair } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { AiTwotoneStar } from "react-icons/ai";
 import { BiArrowFromLeft } from "react-icons/bi";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { getRouteId } from "../Redux/route/reducer";
+import { addSeat } from "../Redux/order/action";
 import { error } from "../Utils/notification";
-function Bookseat() {
-  let [searchParams, setSearchParams] = useSearchParams();
-  let param = useParams();
+import { getOrderSeat } from "../Redux/order/reducer";
+
+const Seat = ({ seatNumber, isSelected, isBooked, onClick }) => {
+  return (
+    <MdOutlineChair
+      className={`text-4xl cursor-pointer ${
+        isBooked
+          ? "text-red-600 cursor-not-allowed"
+          : isSelected
+          ? "text-green-500"
+          : "text-gray-400"
+      }`}
+      onClick={!isBooked ? onClick : null}
+    />
+  );
+};
+
+const SeatSelection = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+
+  const [selectedSeats, setSelectedSeats] = useState([]);
+
+  const data = useSelector((state) => state.route.route);
+  const seatData = useSelector((state) => state.order.seatOrder);
+
+  console.log("The seat data are:", seatData);
+  const totalSeats = data.totalSeat;
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
-  let arr = Array(30)
-    .fill()
-    .map((ele, i) => i + 1);
-
-  const [data, setdata] = useState([]);
-  const [bookedSeates, setbookedSeates] = useState([]);
-  const [wentwrong, setwentwrong] = useState(false);
-
-  const ticket = useSelector((state) => state.ticket.ticketNo);
 
   useEffect(() => {
-    let date = searchParams.get("date");
-    if (date === "" || date === null || date === undefined) {
-      setwentwrong(true);
-    } else {
-      getdata();
-    }
-  }, []);
-  async function getdata() {
-    // console.log(param.id);
-    try {
-      let res = await axios.post("http://localhost:8080/bus/one", {
-        id: param.id,
-      });
-      // console.log("OK", res.data);
-      setdata(res.data);
-      let info = res.data[0].seats;
-      let date = searchParams.get("date");
-      let ans = info.filter((ele) => {
-        let x = ele.split("@");
-        if (x[0] == date) {
-          let z = x[1].split(",");
-          setbookedSeates([...z]);
-          return z;
-        }
-      });
-      // console.log("ans", ans);
-      // console.log("bookedSeats", bookedSeates);
-      setwentwrong(false);
-    } catch (error) {
-      console.log(error);
-      setwentwrong(true);
-    }
-  }
-  function handleClicked(ele) {
-    if (ticket.length > 0) {
-      sessionStorage.setItem("busData", JSON.stringify(data));
-      navigate({
-        pathname: `/details/${param.id}`,
-        search: `?&date=${searchParams.get("date")}&ticket=${[
-          ...ticket,
-        ]}&amount=${ticket.length * ele}`,
-      });
-    } else {
-      error("Please select Seat First");
-    }
+    dispatch(getRouteId(id));
+    dispatch(getOrderSeat(id));
+  }, [id, dispatch]);
+
+  // Ensure the route data is loaded
+  if (!data || !data.bus) {
+    return <div>Loading...</div>;
   }
 
-  // console.log("DATAAAA", data);
+  const handleSeatClick = (seatNumber) => {
+    if (selectedSeats.includes(seatNumber)) {
+      const updatedSeats = selectedSeats.filter((seat) => seat !== seatNumber);
+      setSelectedSeats(updatedSeats);
+    } else {
+      if (selectedSeats.length < 10) {
+        const updatedSeats = [...selectedSeats, seatNumber];
+        setSelectedSeats(updatedSeats);
+        console.log("Selected Seats after selecting:", updatedSeats);
+      } else {
+        alert("You can only select a maximum of 10 seats.");
+      }
+    }
+  };
+
+  const isSeatBooked = (seatNumber) => {
+    return seatData.some((seat) => seat.seatNumber.includes(seatNumber));
+  };
+  const bookedSeatsCount = seatData.reduce(
+    (avaliableSeat, order) => avaliableSeat + order.seatNumber.length,
+    0
+  );
+
+  const renderSeat = () => {
+    let seats = [];
+    for (let i = 1; i <= totalSeats; i++) {
+      const rowPrefix = i <= 21 ? "A" : "B";
+      const seatNumber = `${rowPrefix}${i}`;
+      const isBooked = isSeatBooked(seatNumber);
+      seats.push(
+        <Seat
+          key={seatNumber}
+          seatNumber={seatNumber}
+          isSelected={selectedSeats.includes(seatNumber)}
+          isBooked={isBooked}
+          onClick={() => handleSeatClick(seatNumber)}
+        />
+      );
+    }
+    return seats;
+  };
+
+  const totalPrice = data ? data.price * selectedSeats.length : 0;
+
+  const handleConfirm = () => {
+    console.log(selectedSeats);
+    if (selectedSeats.length > 0) {
+      dispatch(addSeat(selectedSeats, totalPrice));
+      navigate({
+        pathname: `/details/${id}`,
+        search: `?&date=${searchParams.get("date")}&ticket=${[
+          ...selectedSeats,
+        ]}&amount=${totalPrice}`,
+      });
+    } else {
+      error("Please select a seat first");
+    }
+  };
 
   return (
-    <>
-      {" "}
-      {wentwrong ? (
-        <div className={styles.wrong}>
-          <img src={require("../Images/404-error-page-templates.png")} />
-        </div>
-      ) : (
-        <div className={styles.main}>
-          <div className={styles.seats}>
-            <div>
-              <h4 style={{ textAlign: "left" }}>Lower Deck</h4>
-              <div className={styles.maincontainer}>
-                <div className={styles.singlerow}>
-                  {bookedSeates.includes("1") ? (
-                    <EachDeckSeat id={1} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={1} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("2") ? (
-                    <EachDeckSeat id={2} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={2} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("3") ? (
-                    <EachDeckSeat id={3} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={3} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("4") ? (
-                    <EachDeckSeat id={4} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={4} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("5") ? (
-                    <EachDeckSeat id={5} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={5} color={"gray"} disable={false} />
-                  )}
-                </div>
-                <div className={styles.maincontainer1}>
-                  <div className={styles.doublerow}>
-                    {bookedSeates.includes("11") ? (
-                      <EachDeckSeat id={11} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={11} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("12") ? (
-                      <EachDeckSeat id={12} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={12} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("13") ? (
-                      <EachDeckSeat id={13} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={13} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("14") ? (
-                      <EachDeckSeat id={14} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={14} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("15") ? (
-                      <EachDeckSeat id={15} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={15} color={"gray"} disable={false} />
-                    )}
-                  </div>
-                  <div className={styles.doublerow}>
-                    {bookedSeates.includes("16") ? (
-                      <EachDeckSeat id={16} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={16} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("17") ? (
-                      <EachDeckSeat id={17} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={17} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("18") ? (
-                      <EachDeckSeat id={18} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={18} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("19") ? (
-                      <EachDeckSeat id={19} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={19} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("20") ? (
-                      <EachDeckSeat id={20} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={20} color={"gray"} disable={false} />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              style={{ textAlign: "left", marginTop: "25px", width: "100%" }}
-            >
-              <h4>Upper Deck</h4>
-              <div className={styles.maincontainer}>
-                <div className={styles.singlerow}>
-                  {bookedSeates.includes("6") ? (
-                    <EachDeckSeat id={6} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={6} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("7") ? (
-                    <EachDeckSeat id={7} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={7} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("8") ? (
-                    <EachDeckSeat id={8} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={8} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("9") ? (
-                    <EachDeckSeat id={9} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={9} color={"gray"} disable={false} />
-                  )}
-                  {bookedSeates.includes("10") ? (
-                    <EachDeckSeat id={10} color={"red"} disable={true} />
-                  ) : (
-                    <EachDeckSeat id={10} color={"gray"} disable={false} />
-                  )}
-                </div>
-                <div className={styles.maincontainer1}>
-                  <div className={styles.doublerow}>
-                    {bookedSeates.includes("21") ? (
-                      <EachDeckSeat id={21} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={21} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("22") ? (
-                      <EachDeckSeat id={22} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={22} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("23") ? (
-                      <EachDeckSeat id={23} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={23} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("24") ? (
-                      <EachDeckSeat id={24} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={24} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("25") ? (
-                      <EachDeckSeat id={25} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={25} color={"gray"} disable={false} />
-                    )}
-                  </div>
-                  <div className={styles.doublerow}>
-                    {bookedSeates.includes("26") ? (
-                      <EachDeckSeat id={26} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={26} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("27") ? (
-                      <EachDeckSeat id={27} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={27} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("28") ? (
-                      <EachDeckSeat id={28} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={28} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("29") ? (
-                      <EachDeckSeat id={29} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={29} color={"gray"} disable={false} />
-                    )}
-                    {bookedSeates.includes("30") ? (
-                      <EachDeckSeat id={30} color={"red"} disable={true} />
-                    ) : (
-                      <EachDeckSeat id={30} color={"gray"} disable={false} />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="text-center my-28 h-full">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">
+        Bus Seat Booking
+      </h2>
 
-          <div className={styles.busdata}>
-            {" "}
-            {data.map((ele) => {
-              return (
-                <div>
-                  <h5>
-                    {ele?.companyname.charAt(0).toUpperCase() +
-                      ele?.companyname.slice(1)}{" "}
-                  </h5>
-                  <div>
-                    {" "}
-                    <p>{ele?.from}</p>
-                    <p>
-                      <BiArrowFromLeft />
-                    </p>
-                    <p>{ele?.to}</p>
-                  </div>
-                  <hr />
-                  <h6>Arrival Time : {ele.arrival}</h6>
-                  <h6>Departure Time : {ele.departure}</h6>
-                  <hr />
-                  <h6>Email : {ele?.email}</h6>
-                  <h6>Phone : {ele?.phone}</h6>
-                  <hr />
-                  <div className={styles.seatno}>
-                    <span className={styles.seatlb}>Seat No.</span>
-                    <div className={styles.selectedseats}>
-                      {ticket?.map((ele, i) => {
-                        return <span key={i}> {ele}, </span>;
-                      })}
-                    </div>
-                  </div>
-                  <hr />
-                  <div className={styles.fair}>Fare Details</div>
-                  <div className={styles.summarycontainer}>
-                    <span className={styles.fareslb}>Amount</span>
-                    <span className={styles.summaryvalue}>
-                      <span className={styles.summarycurrency}>RS</span>
-                      <span>{ticket.length * ele.price}</span>
-                    </span>
-                  </div>
-                  <button
-                    className={styles.btn}
-                    onClick={() => handleClicked(ele.price)}
-                  >
-                    Proceed to book
-                  </button>
-                </div>
-              );
-            })}
+      {/* Header */}
+      <div className="flex justify-center mb-4">
+        <div className="w-8 h-8 bg-gray-200 rounded-full border border-gray-400 mr-2"></div>
+        <span className="text-gray-600">Available</span>
+        <div className="w-8 h-8 bg-green-500 rounded-full border border-green-600 mx-4"></div>
+        <span className="text-gray-600">Selected</span>
+        <div className="w-8 h-8 bg-gray-400 rounded-full border border-gray-500 mx-4"></div>
+        <span className="text-gray-600">Booked</span>
+      </div>
+
+      <div className="text-center flex items-center justify-center w-full">
+        <div className="w-1/3 flex justify-between items-center">
+          <div>Total Seats: {data.totalSeat}</div>
+          <div>Available Seats: {totalSeats - bookedSeatsCount}</div>
+        </div>
+      </div>
+
+      <div className="lg:flex justify-center items-center">
+        {/* Select Seat */}
+        <div className="w-full lg:w-1/2 mt-4 flex flex-col-reverse items-center justify-end">
+          <div className="lg:ml-24 flex space-x-6">
+            {/* Row 1-10 */}
+            <div className="w-full grid grid-rows-10 gap-x-3 mt-4">
+              {renderSeat().slice(0, 10)}
+            </div>
+            <div className="w-full grid grid-rows-10 gap-x-3 mt-4">
+              {renderSeat().slice(10, 20)}
+            </div>
+            <div className="w-full grid grid-rows-10 gap-x-3 mt-4">
+              <div className="row-span-9"></div>
+              {renderSeat().slice(20, 21)}
+            </div>
+            <div className="w-full grid grid-rows-10 gap-x-3 mt-4">
+              {renderSeat().slice(21, 31)}
+            </div>
+            <div className="w-full grid grid-rows-10 gap-x-3 mt-4">
+              {renderSeat().slice(31, 41)}
+            </div>
           </div>
         </div>
-      )}
-    </>
+
+        {/* Details */}
+        <div className="w-9/12 lg:w-1/2 items-center justify-center lg:justify-start mt-12 h-full flex flex-row gap-5 flex-wrap">
+          {data ? (
+            <div
+              key={data._id}
+              className="w-8/12 p-4 shadow-2xl shadow-black rounded-lg"
+            >
+              <h5 className="font-semibold">
+                {data.bus.companyName
+                  ? data.bus.companyName
+                  : "Unknown Company"}
+              </h5>
+              <div className="flex justify-between mt-3 mb-2 px-8">
+                <p>{data.from}</p>
+                <p>
+                  <BiArrowFromLeft />
+                </p>
+                <p>{data.to}</p>
+              </div>
+              <div className="flex gap-2 font-light px-8">
+                {/* Display amenities if any */}
+                {data.bus.amenities?.map((e, i) => (
+                  <div key={i}>
+                    <p>{e}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="text-start px-8">
+                Seat no: {selectedSeats.join(", ")}
+              </div>
+              <hr />
+              <div className="px-8 font-thin flex justify-start">
+                Date: {new Date(data.date).toISOString().split("T")[0]}
+              </div>
+              <div className="px-8 font-thin flex justify-start">
+                Arrival Time: {data.arrival}
+              </div>
+              <div className="px-8 font-thin flex justify-start">
+                Departure Time: {data.departure}
+              </div>
+              <hr />
+              <div className="px-8 font-thin flex justify-start">
+                Email: {data.bus.email}
+              </div>
+              <div className="px-8 font-thin flex justify-start">
+                Phone: {data.bus.phone}
+              </div>
+              <hr />
+              <div className="flex justify-between px-10">
+                <h5>Price: RS {totalPrice}</h5>
+                <div className="flex justify-center pb-2">
+                  {/* Display stars based on rating */}
+                  {Array(5)
+                    .fill("")
+                    .map((_, i) => (
+                      <AiTwotoneStar
+                        key={i}
+                        color={i < data.rating ? "#FFED00" : "gray"}
+                      />
+                    ))}
+                </div>
+              </div>
+              <button
+                onClick={handleConfirm}
+                className="bg-[#1446A0] text-white rounded-lg px-4 py-2 w-1/2 mt-2"
+              >
+                Proceed to book
+              </button>
+            </div>
+          ) : (
+            <p>Loading data...</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
-}
-export default Bookseat;
+};
+
+export default SeatSelection;

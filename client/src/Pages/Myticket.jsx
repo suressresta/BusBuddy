@@ -1,129 +1,81 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import axios from "axios";
-import { logoutAPI } from "../Redux/authentication/auth.action";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { error, success } from "../Utils/notification";
-import styles from "../Styles/myticket.module.css";
+import { useDispatch, useSelector } from "react-redux";
+import { success } from "../Utils/notification";
 import { BiArrowFromLeft } from "react-icons/bi";
+import {
+  deleteOrder,
+  getOrderById,
+  getPastOrder,
+  getTodayOrder,
+  getUpcommingOrder,
+} from "../Redux/order/reducer";
+import { AiTwotoneStar } from "react-icons/ai";
 
 function Myticket() {
   const [data, setdata] = useState([]);
-  const [today, settoday] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
+  const [today, setToday] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  useEffect(() => {
-    let userid = Cookies.get("userid");
-    getdata(userid);
-    getdataToday();
-    getdataUpcoming();
-    getdataPast();
-    // success("IMP NOTE ;- You Can Cancel Ticket One Day Before Journey ");
-  }, []);
 
-  async function getdata(id) {
-    try {
-      let res = await axios.post("http://localhost:8080/order/myticket", {
-        id,
-      });
-      console.log(res);
-      setdata(res.data);
-    } catch (error1) {
-      Cookies.remove("jwttoken");
-      Cookies.remove("userid");
-      Cookies.remove("usergender");
-      dispatch(logoutAPI());
-
-      error("Session Expired Please Sign In Again");
-      console.log(error1);
-    }
-  }
-
-  async function getdataToday() {
-    let id = Cookies.get("userid");
-
-    try {
-      let res = await axios.post("http://localhost:8080/order/myticket/today", {
-        id,
-      });
-      // console.log("today", res);
-      settoday(res.data);
-    } catch (error) {
-      console.log(error);
-      error("Session Expired Please Sign In Again");
-      dispatch(logoutAPI());
-      navigate("/");
-
-      Cookies.remove("jwttoken");
-      Cookies.remove("userid");
-      Cookies.remove("usergender");
-    }
-  }
-
-  async function getdataUpcoming() {
-    let id = Cookies.get("userid");
-    try {
-      let res = await axios.post(
-        "http://localhost:8080/order/myticket/upcoming",
-        {
-          id,
-        }
-      );
-      console.log("upcoming", res);
-      setUpcoming(res.data);
-    } catch (error) {
-      console.log(error);
-      error("Session Expired Please Sign In Again");
-      dispatch(logoutAPI());
-      navigate("/");
-      Cookies.remove("jwttoken");
-      Cookies.remove("userid");
-      Cookies.remove("usergender");
-    }
-  }
-
-  async function getdataPast() {
-    let id = Cookies.get("userid");
-    try {
-      let res = await axios.post("http://localhost:8080/order/myticket/past", {
-        id,
-      });
-      console.log("past", res);
-      setPast(res.data);
-    } catch (error) {
-      // console.log(error);
-      error("Session Expired Please Sign In Again");
-      dispatch(logoutAPI());
-      navigate("/");
-      Cookies.remove("jwttoken");
-      Cookies.remove("userid");
-      Cookies.remove("usergender");
-    }
-  }
+  const todayData = useSelector((state) => state.order.todayOrder);
+  const UpcommingData = useSelector((state) => state.order.upCommingOrder);
+  const pastData = useSelector((state) => state.order.pastOrder);
 
   async function handledelete(ele) {
-    let userid = ele.user;
-    let userid1 = Cookies.get("userid");
-    try {
-      let res = await axios.delete(
-        `http://localhost:8080/order/oneorder/${ele._id}`
-      );
-      getdata(userid1);
-      getdataToday();
-      getdataUpcoming();
-      getdataPast();
-      success("Ticket Cancelled Successfully");
-    } catch (error1) {
-      error(error1.message);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to cancel this ticket?"
+    );
+    if (confirmDelete) {
+      try {
+        dispatch(deleteOrder(ele._id));
+        success("Ticket Cancelled Successfully");
+        
+        // Optimistically update the state to remove the deleted ticket
+        setToday((prev) => prev.filter((item) => item._id !== ele._id));
+        setUpcoming((prev) => prev.filter((item) => item._id !== ele._id));
+        setPast((prev) => prev.filter((item) => item._id !== ele._id));
+      } catch (error) {
+        error("Error deleting ticket: " + error.message);
+      }
     }
   }
 
+  const handleEdit = (ele) => {
+    const id = ele._id;
+    console.log(id);
+    const journeyDate = new Date(ele.route.date)
+      .toLocaleDateString("en-GB")
+      .replace(/\//g, "-");
+
+    navigate(`/edit_ticket/${id}?date=${journeyDate}`);
+  };
+
+  // Effect to dispatch data fetching when component mounts
+  useEffect(() => {
+    const userId = Cookies.get("userid");
+    if (userId) {
+      dispatch(getTodayOrder(userId));
+      dispatch(getUpcommingOrder(userId));
+      dispatch(getPastOrder(userId));
+    }
+  }, []);
+
+  // Effect to update states from Redux store when the store data changes
+  useEffect(() => {
+    setToday(todayData);
+    setUpcoming(UpcommingData);
+    setPast(pastData);
+  }, [todayData, UpcommingData, pastData]);
+
   return (
-    <div style={{ marginTop: "8%" }}>
-      <nav style={{ height: "100%" }}>
+    <div className="mt-[14%]">
+      <nav className="h-full">
+        {/* Buttons */}
         <div className="nav nav-tabs" id="nav-tab" role="tablist">
           <button
             className="nav-link active"
@@ -134,7 +86,6 @@ function Myticket() {
             role="tab"
             aria-controls="nav-home"
             aria-selected="true"
-            onClick={getdataToday}
           >
             Today's Tickets
           </button>
@@ -165,204 +116,324 @@ function Myticket() {
         </div>
       </nav>
       <div className="tab-content" id="nav-tabContent">
+        {/* Today's Tickets */}
         <div
           className="tab-pane fade show active"
           id="nav-home"
           role="tabpanel"
           aria-labelledby="nav-home-tab"
         >
-          <div>
-            <div className={styles.busdata}>
-              {" "}
-              {today?.map((ele) => {
-                return (
-                  <div>
-                    <h5>
-                      {ele?.busDetails.name.charAt(0).toUpperCase() +
-                        ele?.busDetails.name.slice(1)}{" "}
-                      Travels
-                    </h5>
-                    <div>
-                      {" "}
-                      <p>{ele?.busDetails.from}</p>
-                      <p>
-                        <BiArrowFromLeft />
-                      </p>
-                      <p>{ele?.busDetails.to}</p>
-                    </div>
-                    <hr />
-                    <h6>Arrival Time : {ele.busDetails.arrival}</h6>
-                    <h6>Departure Time : {ele.busDetails.departure}</h6>
-                    <hr />
-                    <h6>Email : {ele?.busDetails.contactemail}</h6>
-                    <h6>Phone : {ele?.busDetails.contactphone}</h6>
-                    <hr />
-                    <h6>
-                      Date Of Journey : {ele?.ticketSummary.date.split("T")[0]}
-                    </h6>
-                    <hr />
-                    <div className={styles.seatno}>
-                      <span className={styles.seatlb}>Seat No.</span>
-                      <div className={styles.selectedseats}>
-                        <span>{ele.ticketSummary.ticket}</span>
-                      </div>
-                    </div>
-                    <hr />
-                    <div className={styles.fair}>Fare Details</div>
-                    <div className={styles.summarycontainer}>
-                      <span className={styles.fareslb}>Amount</span>
-                      <span className={styles.summaryvalue}>
-                        <span className={styles.summarycurrency}>INR</span>
-                        <span>{ele.ticketSummary.amount}</span>
-                      </span>
-                    </div>
-                    <div></div>
-                    {JSON.stringify(new Date()).split("T")[0].split('"')[1] ===
-                    ele?.ticketSummary.date.split("T")[0] ? (
-                      <button className={styles.button49}>HAPPY JOURNEY</button>
-                    ) : (
-                      <button
-                        className={styles.btn}
-                        onClick={() => handledelete(ele)}
-                      >
-                        Cancel Ticket
-                      </button>
-                    )}
+          <div className="flex items-center justify-center m-4 h-full">
+            {today?.length === 0 ? (
+              <p>No Tickets for Today.</p>
+            ) : (
+              today?.map((ele) => (
+                <div
+                  key={ele._id}
+                  className="w-1/3 mx-4 p-4 shadow-lg shadow-black   rounded-lg"
+                >
+                  <h5 className="text-xl font-semibold">
+                    {ele?.route?.bus?.companyName} Travels
+                  </h5>
+                  <div className="flex justify-between  mt-3 mb-2 px-8">
+                    <p>{ele?.route?.from}</p>
+                    <p>
+                      <BiArrowFromLeft />
+                    </p>
+                    <p>{ele?.route?.to}</p>
                   </div>
-                );
-              })}
-            </div>
+                  <hr />
+
+                  <div className="text-start pt-2  px-8">
+                    Seat no : {ele?.seatNumber.join(", ")}
+                  </div>
+
+                  <div className="text-start px-8 pb-2">
+                    Booking Date :{" "}
+                    {new Date(ele?.createdAt).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <hr className="my-2" />
+
+                  <div className="text-start font-light px-8 pt-2">
+                    Date Of Journey:{" "}
+                    {new Date(ele?.route?.date).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <div className="text-start px-8  font-light">
+                    Arrival Time: {ele?.route?.arrival}
+                  </div>
+                  <div className="text-start px-8 font-light pb-2">
+                    Departure Time: {ele?.route?.departure}
+                  </div>
+                  <hr className="my-2" />
+
+                  <div className="text-start px-8  font-light pt-2">
+                    Email: {ele?.route?.bus?.email}
+                  </div>
+                  <div className="text-start px-8  font-light">
+                    Phone: {ele?.route?.bus?.phone}
+                  </div>
+                  <div className=" flex px-8 font-light ">
+                    <div className="flex start gap-2">
+                      Amenities:
+                      {ele?.route?.bus.amenities?.map((e, i) => (
+                        <div key={i}>
+                          <p>{e}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <hr className="my-2" />
+
+                  <div className="flex justify-between items-center px-8 mt-2 gap-2">
+                    <div className=" gap-2">
+                      <h5 className="text-lg font-semibold">
+                        Total amount : RS {ele?.totalAmount}
+                      </h5>
+                    </div>
+                    <div className="flex justify-center pb-2">
+                      {/* Display stars based on rating */}
+                      {Array(5)
+                        .fill("")
+                        .map((_, i) => (
+                          <AiTwotoneStar
+                            key={i}
+                            color={i < data.rating ? "#FFED00" : "gray"}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
+
+        {/* Upcoming Tickets */}
         <div
           className="tab-pane fade"
           id="nav-profile"
           role="tabpanel"
           aria-labelledby="nav-profile-tab"
         >
-          <div>
-            <div className={styles.busdata}>
-              {" "}
-              {upcoming?.map((ele) => {
-                return (
-                  <div>
-                    <h5>
-                      {ele?.busDetails.name.charAt(0).toUpperCase() +
-                        ele?.busDetails.name.slice(1)}{" "}
-                      Travels
-                    </h5>
-                    <div>
-                      {" "}
-                      <p>{ele?.busDetails.from}</p>
-                      <p>
-                        <BiArrowFromLeft />
-                      </p>
-                      <p>{ele?.busDetails.to}</p>
-                    </div>
-                    <hr />
-                    <h6>Arrival Time : {ele.busDetails.arrival}</h6>
-                    <h6>Departure Time : {ele.busDetails.departure}</h6>
-                    <hr />
-                    <h6>Email : {ele?.busDetails.contactemail}</h6>
-                    <h6>Phone : {ele?.busDetails.contactphone}</h6>
-                    <hr />
-                    <h6>
-                      Date Of Journey : {ele?.ticketSummary.date.split("T")[0]}
-                    </h6>
-                    <hr />
-                    <div className={styles.seatno}>
-                      <span className={styles.seatlb}>Seat No.</span>
-                      <div className={styles.selectedseats}>
-                        <span>{ele.ticketSummary.ticket}</span>
-                      </div>
-                    </div>
-                    <hr />
-                    <div className={styles.fair}>Fare Details</div>
-                    <div className={styles.summarycontainer}>
-                      <span className={styles.fareslb}>Amount</span>
-                      <span className={styles.summaryvalue}>
-                        <span className={styles.summarycurrency}>INR</span>
-                        <span>{ele.ticketSummary.amount}</span>
-                      </span>
-                    </div>
-                    <div></div>
-                    {JSON.stringify(new Date()).split("T")[0].split('"')[1] ===
-                    ele?.ticketSummary.date.split("T")[0] ? (
-                      <button className={styles.button49}>HAPPY JOURNEY</button>
-                    ) : (
-                      <button
-                        className={styles.btn}
-                        onClick={() => handledelete(ele)}
-                      >
-                        Cancel Ticket
-                      </button>
-                    )}
+          <div className="flex items-center justify-center m-4 h-full">
+            {upcoming?.length === 0 ? (
+              <p>No Upcoming Tickets.</p>
+            ) : (
+              upcoming?.map((ele) => (
+                <div
+                  key={ele._id}
+                  className="w-1/3 mx-4 p-4 shadow-lg shadow-black   rounded-lg"
+                >
+                  <h5 className="text-xl font-semibold">
+                    {ele?.route?.bus?.companyName} Travels
+                  </h5>
+                  <div className="flex justify-between  mt-3 mb-2 px-8">
+                    <p>{ele?.route?.from}</p>
+                    <p>
+                      <BiArrowFromLeft />
+                    </p>
+                    <p>{ele?.route?.to}</p>
                   </div>
-                );
-              })}
-            </div>
+                  <hr />
+
+                  <div className="text-start pt-2  px-8">
+                    Seat no : {ele?.seatNumber.join(", ")}
+                  </div>
+
+                  <div className="text-start px-8 pb-2">
+                    Booking Date :{" "}
+                    {new Date(ele?.createdAt).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <hr className="my-2" />
+
+                  <div className="text-start font-light px-8 pt-2">
+                    Date Of Journey:{" "}
+                    {new Date(ele?.route?.date).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <div className="text-start px-8  font-light">
+                    Arrival Time: {ele?.route?.arrival}
+                  </div>
+                  <div className="text-start px-8 font-light pb-2">
+                    Departure Time: {ele?.route?.departure}
+                  </div>
+                  <hr className="my-2" />
+
+                  <div className="text-start px-8  font-light pt-2">
+                    Email: {ele?.route?.bus?.email}
+                  </div>
+                  <div className="text-start px-8  font-light">
+                    Phone: {ele?.route?.bus?.phone}
+                  </div>
+                  <div className=" flex px-8 font-light ">
+                    <div className="flex start gap-2">
+                      Amenities:
+                      {ele?.route?.bus.amenities?.map((e, i) => (
+                        <div key={i}>
+                          <p>{e}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <hr className="my-2" />
+
+                  <div className="flex justify-between items-center px-8 mt-2 gap-2">
+                    <div className=" gap-2">
+                      <h5 className="text-lg font-semibold">
+                        Total amount : RS {ele?.totalAmount}
+                      </h5>
+                    </div>
+                    <div className="flex justify-center pb-2">
+                      {/* Display stars based on rating */}
+                      {Array(5)
+                        .fill("")
+                        .map((_, i) => (
+                          <AiTwotoneStar
+                            key={i}
+                            color={i < data.rating ? "#FFED00" : "gray"}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                  <button
+                    className="bg-yellow-600 text-white rounded-lg px-4 py-2 w-1/3 mt-2 mx-2"
+                    onClick={() => handleEdit(ele)}
+                  >
+                    Edit Ticket
+                  </button>
+
+                  <button
+                    className="bg-[#1446A0] text-white rounded-lg px-4 py-2 w-1/3 mt-2 mx-2"
+                    onClick={() => handledelete(ele)}
+                  >
+                    Cancel Ticket
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
+
+        {/* Past Tickets */}
         <div
           className="tab-pane fade"
           id="nav-contact"
           role="tabpanel"
           aria-labelledby="nav-contact-tab"
         >
-          <div>
-            <div className={styles.busdata}>
-              {" "}
-              {past?.map((ele) => {
-                return (
-                  <div>
-                    <h5>
-                      {ele?.busDetails.name.charAt(0).toUpperCase() +
-                        ele?.busDetails.name.slice(1)}{" "}
-                      Travels
-                    </h5>
-                    <div>
-                      {" "}
-                      <p>{ele?.busDetails.from}</p>
-                      <p>
-                        <BiArrowFromLeft />
-                      </p>
-                      <p>{ele?.busDetails.to}</p>
-                    </div>
-                    <hr />
-                    <h6>Arrival Time : {ele.busDetails.arrival}</h6>
-                    <h6>Departure Time : {ele.busDetails.departure}</h6>
-                    <hr />
-                    <h6>Email : {ele?.busDetails.contactemail}</h6>
-                    <h6>Phone : {ele?.busDetails.contactphone}</h6>
-                    <hr />
-                    <h6>
-                      Date Of Journey : {ele?.ticketSummary.date.split("T")[0]}
-                    </h6>
-                    <hr />
-                    <div className={styles.seatno}>
-                      <span className={styles.seatlb}>Seat No.</span>
-                      <div className={styles.selectedseats}>
-                        <span>{ele.ticketSummary.ticket}</span>
-                      </div>
-                    </div>
-                    <hr />
-                    <div className={styles.fair}>Fare Details</div>
-                    <div className={styles.summarycontainer}>
-                      <span className={styles.fareslb}>Amount</span>
-                      <span className={styles.summaryvalue}>
-                        <span className={styles.summarycurrency}>INR</span>
-                        <span>{ele.ticketSummary.amount}</span>
-                      </span>
-                    </div>
-                    <div></div>
+          <div className="flex items-center justify-center m-4 h-full">
+            {past?.length === 0 ? (
+              <p>No Past Tickets.</p>
+            ) : (
+              past?.map((ele) => (
+                <div
+                  key={ele._id}
+                  className="w-1/3 mx-4 p-4 shadow-lg shadow-black   rounded-lg"
+                >
+                  <h5 className="text-xl font-semibold">
+                    {ele?.route?.bus?.companyName} Travels
+                  </h5>
+                  <div className="flex justify-between  mt-3 mb-2 px-8">
+                    <p>{ele?.route?.from}</p>
+                    <p>
+                      <BiArrowFromLeft />
+                    </p>
+                    <p>{ele?.route?.to}</p>
                   </div>
-                );
-              })}
-            </div>
+                  <hr />
+
+                  <div className="text-start pt-2  px-8">
+                    Seat no : {ele?.seatNumber.join(", ")}
+                  </div>
+
+                  <div className="text-start px-8 pb-2">
+                    Booking Date :{" "}
+                    {new Date(ele?.createdAt).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <hr className="my-2" />
+
+                  <div className="text-start font-light px-8 pt-2">
+                    Date Of Journey:{" "}
+                    {new Date(ele?.route?.date).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                  <div className="text-start px-8  font-light">
+                    Arrival Time: {ele?.route?.arrival}
+                  </div>
+                  <div className="text-start px-8 font-light pb-2">
+                    Departure Time: {ele?.route?.departure}
+                  </div>
+                  <hr className="my-2" />
+
+                  <div className="text-start px-8  font-light pt-2">
+                    Email: {ele?.route?.bus?.email}
+                  </div>
+                  <div className="text-start px-8  font-light">
+                    Phone: {ele?.route?.bus?.phone}
+                  </div>
+                  <div className=" flex px-8 font-light ">
+                    <div className="flex start gap-2">
+                      Amenities:
+                      {ele?.route?.bus.amenities?.map((e, i) => (
+                        <div key={i}>
+                          <p>{e}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <hr className="my-2" />
+
+                  <div className="flex justify-between items-center px-8 mt-2 gap-2">
+                    <div className=" gap-2">
+                      <h5 className="text-lg font-semibold">
+                        Total amount : RS {ele?.totalAmount}
+                      </h5>
+                    </div>
+                    <div className="flex justify-center pb-2">
+                      {/* Display stars based on rating */}
+                      {Array(5)
+                        .fill("")
+                        .map((_, i) => (
+                          <AiTwotoneStar
+                            key={i}
+                            color={i < data.rating ? "#FFED00" : "gray"}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 export default Myticket;

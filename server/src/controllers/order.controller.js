@@ -1,67 +1,111 @@
 const express = require("express");
-const BusModel = require("../models/bus.model");
+const routeModel = require("../models/route.model");
+const userModel = require("../models/user.model");
 const Order = require("../models/order.model");
-const moment = require("moment");
 const app = express.Router();
+const { getEsewaPaymentHash } = require("../middleware/esewa");
+const { v4: uuidv4 } = require("uuid");
 
+// Get all
 app.get("/", async (req, res) => {
   try {
-    const data = await Order.find({});
+    const data = await Order.find({})
+      .sort({ _id: -1 })
+      .populate("user")
+      .populate({
+        path: "route",
+        populate: {
+          path: "bus",
+          model: "Bus",
+        },
+      });
     return res.send({ status: "success", data: data });
   } catch (error) {
     return res.status(500).send({ status: "failed", data: error.message });
   }
 });
 
+// Get Order by Id
+app.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id);
+    if (!order) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "order not found" });
+    }
+    return res.status(200).json({ status: "success", data: order });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+//Add Order
 app.post("/", async (req, res) => {
   try {
-    // Step 1: Find the bus details by its ID
-    const busId = req.body.bus;
+    const routeId = req.body.route;
+    const userId = req.body.user;
+    const seatNumber = req.body.seatNumber;
+    // Fetch route and user details
+    const routeDetail = await routeModel.findById(routeId);
+    const userDetail = await userModel.findById(userId);
 
-    // Fetch the bus details from the BusModel collection
-    const busDetails = await BusModel.findById(busId);
-
-    if (!busDetails) {
-      return res.status(404).json({ message: "Bus not found!" });
+    if (!routeDetail) {
+      return res.status(404).json({ message: "Route not found!" });
     }
 
-    // Step 2: Automatically fill in the bus details in the order
+    // Check if there are any available seats left
+    if (routeDetail.avaliableSeat <= 0) {
+      return res
+        .status(400)
+        .json({ message: "No available seats on this route!" });
+    }
+
+    const existingOrder = await Order.findOne({
+      route: routeId,
+      seatNumber: seatNumber,
+    });
+
+    if (existingOrder) {
+      return res.status(400).json({ message: "Seat already taken!" });
+    }
+
     const orderData = {
-      ...req.body, // Include all the order data from the request body
-      busDetails: {
-        date: busDetails.date,
-        name: busDetails.companyname, // Ensure this matches the bus model field
-        from: busDetails.from,
-        to: busDetails.to,
-        contactemail: busDetails.email, // Ensure this matches the bus model field
-        contactphone: busDetails.phone, // Ensure this matches the bus model field
-        arrival: busDetails.arrival,
-        departure: busDetails.departure,
+      ...req.body, // other all req
+      routeDetail: {
+        date: routeDetail.date,
+        from: routeDetail.from,
+        to: routeDetail.to,
+        arrival: routeDetail.arrival,
+        departure: routeDetail.departure,
       },
-      bus: busId, // Add the busId to the order
+      userDetail: {
+        email: userDetail.email,
+      },
+      seatNumber: seatNumber,
     };
 
-    // Step 3: Create a new order document
     const newOrder = await Order.create(orderData);
 
-    // Step 4: Prepare ticket data and update the bus seat availability
-    let ticketdata =
-      req.body.ticketSummary.date +
-      "@" +
-      req.body.ticketSummary.ticket +
-      "@" +
-      req.body.userDetails.gender;
+    //Payment Initiate
+    const paymentInitiate = await getEsewaPaymentHash({
+      amount: newOrder.totalAmount,
+      transaction_uuid: newOrder._id, // passing the id of new created order
+    });
 
-    let filter = { _id: busId };
-    let update = { $push: { seats: ticketdata } };
+    await routeModel.findByIdAndUpdate(routeId, {
+      $inc: { availableSeat: -1 },
+    });
 
-    // Update the bus with the new ticket data (push to seats array)
-    await BusModel.findOneAndUpdate(filter, update);
+    //   Fetch the updated route details to reflect the change in available seats
+    const updatedRouteDetail = await routeModel.findById(routeId);
 
-    // Step 5: Return the created order with busDetails but only once
+    //  Return the created order with bus details and the remaining available seats
     return res.status(201).json({
-      order: newOrder, // Return the created order
-      busDetails: newOrder.busDetails, // Send the bus details directly from the order
+      Payment: paymentInitiate,
+      order: newOrder,
+      remainingSeats: updatedRouteDetail.avaliableSeat,
     });
   } catch (error) {
     console.error(error);
@@ -69,192 +113,297 @@ app.post("/", async (req, res) => {
   }
 });
 
-// app.post("/myticket", async (req, res) => {
-//   try {
-//     const order = await Order.find({ user: req.body.id });
-//     return res.status(201).json(order);
-//   } catch (error) {
-//     return res.status(500).json({ message: "Internal server error!" });
-//   }
-// });
-
-app.post("/myticket", async (req, res) => {
+//Delete
+app.delete("/:id", async (req, res) => {
   try {
-    // Ensure the request body has the userId
-    const userId = req.body.id;
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found!" });
+    }
+    return res.status(200).json({ message: "Order deleted sucessfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+});
 
+//Update
+app.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { seatNumber, routeId, totalAmount } = req.body;
+  try {
+    if (isNaN(totalAmount)) {
+      return res.status(400).json({ message: "Invalid totalAmount provided!" });
+    }
+    // Check if the seat is already taken
+    const existingOrder = await Order.findOne({
+      route: routeId,
+      seatNumber: seatNumber,
+    });
+
+    if (existingOrder) {
+      return res.status(400).json({ message: "Seat already taken!" });
+    }
+    const order = await Order.findById(id);
+
+    const data = await Order.findByIdAndUpdate(id, req.body, { new: true });
+
+    let amountDifference = Math.abs(totalAmount - order.totalAmount);
+    const uniqueTransactionUUID = uuidv4();
+    console.log("The uuid:", uniqueTransactionUUID);
+
+    const paymentInitiate = await getEsewaPaymentHash({
+      transaction_uuid: uniqueTransactionUUID,
+      amount: amountDifference,
+    });
+    res.status(201).json({
+      message: "Order updated successfully",
+      data: data,
+      Payment: paymentInitiate,
+    });
+  } catch (error) {
+    console.error("Error in updating order:", error);
+    res.status(500).send("Error in updating order");
+  }
+});
+
+// Get Seat
+app.get("/seat/:routeId", async (req, res) => {
+  try {
+    const routeId = req.params.routeId;
+    const data = await Order.find({
+      route: routeId,
+      status: { $in: ["confirmed", "pending"] },
+    });
+
+    if (!data || data.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No bookings found for this route" });
+    }
+    const bookedSeats = data.map((order) => ({
+      userName: order.userDetails.name,
+      number: order.userDetails.phone,
+      seatNumber: order.seatNumber,
+      totalAmount: order.totalAmount,
+      registeredDate: order.createdAt,
+    }));
+
+    return res.status(200).json({
+      status: 200,
+      message: "Seats retrieved successfully",
+      data: bookedSeats,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Get order By Route ID
+app.post("/route/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const orders = await Order.find({ route: id });
+
+    if (!orders || orders.length === 0) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "No orders found for this route" });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Orders retrieved successfully",
+      data: orders,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+//Get by user Id
+app.get("/myticket/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const data = await Order.find({ user: userId }).populate("route");
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Orders retrieved successfully",
+      data: data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Get Today Ticket
+app.post("/myticket/today", async (req, res) => {
+  const currentDate = new Date();
+  const userId = req.body.userId;
+
+  try {
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    // Fetch orders filtered by userId
-    const orders = await Order.find({ user: userId });
+    // Fetch the orders for the given user and populate related route and bus information
+    const orders = await Order.find({ user: userId }).populate({
+      path: "route",
+      populate: {
+        path: "bus",
+        model: "Bus",
+      },
+    });
 
-    // Check if orders were found
+    // Check if any orders were found for the user
     if (orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user" });
     }
 
-    // Return the orders
-    return res.status(200).json(orders);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error!" });
-  }
-});
+    // Normalize current date to midnight (00:00:00) and avoid time zone issues
+    currentDate.setHours(0, 0, 0, 0); // Reset time portion to midnight (start of the day)
 
-app.delete("/oneorder/:id", async (req, res) => {
-  let id = req.params.id; // Now we are using the order ID
-  try {
-    const order = await Order.findByIdAndDelete(id); // Find and delete the order by its ID
-    if (!order) {
-      return res.status(404).json({ message: "Order not found!" }); // If the order does not exist
-    }
-    return res.status(200).json({ message: "Order deleted sucessfully" }); // Return the deleted order with status 200
-  } catch (error) {
-    return res.status(500).json({ message: "Internal server error!" });
-  }
-});
+    // Define the start and end of today
+    const startOfDay = new Date(currentDate); // This is the 00:00:00 of today
+    const endOfDay = new Date(currentDate);
+    endOfDay.setHours(23, 59, 59, 999); // Set to the end of the day (23:59:59.999)
 
-// app.post("/myticket/today", async (req, res) => {
-//   const currentDate = new Date();
-//   const userId = req.body.id; // Ensure you pass the user ID in the request body
+    // Filter orders for today by comparing the route date with the start and end of today
+    const todayOrder = orders.filter((order) => {
+      if (!order.route || !order.route.date) return false;
 
-//   // Set the time to the start of the day for today's comparison (00:00:00)
-//   currentDate.setHours(0, 0, 0, 0);
+      const routeDate = new Date(order.route.date);
 
-//   try {
-//     // Find orders where the user ID matches and the ticket date is today
-//     const orders = await Order.find({
-//       user: userId, // Filter by the user ID
-//       "ticketSummary.date": {
-//         $gte: currentDate, // greater than or equal to today's date
-//         $lt: new Date(currentDate).setHours(23, 59, 59, 999), // less than the end of today (23:59:59)
-//       },
-//     });
-
-//     if (orders.length === 0) {
-//       return res.status(404).json({ message: "No orders found for today" });
-//     }
-
-//     return res.status(200).json(orders);
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Internal server error!" });
-//   }
-// });
-
-app.post("/myticket/today", async (req, res) => {
-  // console.log("hi", req.body);
-  const date = JSON.stringify(new Date()).split("T")[0].split('"')[1];
-  // console.log("bye", date);
-  try {
-    const order = await Order.find();
-    // console.log(order);
-    let data = order.filter((ele) => {
-      let orderDate = JSON.stringify(ele.ticketSummary.date)
-        .split("T")[0]
-        .split('"')[1];
-      if (orderDate === date) {
-        return ele;
-      }
+      // Check if the route date is within today
+      return routeDate >= startOfDay && routeDate <= endOfDay;
     });
-    // console.log(data);
-    return res.status(201).json(data);
+
+    // If no orders for today, return a 404 message
+    if (todayOrder.length === 0) {
+      return res.status(404).json({ message: "No orders found for today" });
+    }
+
+    // Return the orders for today
+    return res.status(200).json({
+      status: 200,
+      message: "Today orders retrieved successfully",
+      data: todayOrder,
+    });
   } catch (error) {
-    // console.log(error);
+    console.error("Error fetching orders:", error);
     return res.status(500).json({ message: "Internal server error!" });
   }
 });
 
+// Get Upcomming Ticket
 app.post("/myticket/upcoming", async (req, res) => {
   const currentDate = new Date();
-  const userId = req.body.id;
+  const userId = req.body.userId;
 
   try {
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    // Find orders for the specific user and where the ticket date is in the future
-    const orders = await Order.find({
-      user: userId, // filter by user ID
-      "ticketSummary.date": { $gt: currentDate }, // filter by upcoming date
+    const orders = await Order.find({ user: userId }).populate({
+      path: "route",
+      populate: {
+        path: "bus",
+        model: "Bus",
+      },
     });
-
+    // Check if orders were found
     if (orders.length === 0) {
       return res
         .status(404)
         .json({ message: "No upcoming orders found for this user" });
     }
 
-    // Return the orders found
-    return res.status(200).json(orders);
+    // Filter orders for Upcoming
+    const upcommingOrders = orders.filter((order) => {
+      if (!order.route || !order.route.date) return false;
+
+      const routeDate = new Date(order.route.date);
+      routeDate.setHours(0, 0, 0, 0);
+
+      return routeDate.getTime() > currentDate.getTime();
+    });
+
+    if (upcommingOrders.length === 0) {
+      return res.status(404).json({ message: "No upcomming orders found " });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      message: "Upcomming Orders retrieved successfully",
+      data: upcommingOrders,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching orders:", error);
     return res.status(500).json({ message: "Internal server error!" });
   }
 });
 
-// app.post("/myticket/upcoming", async (req, res) => {
-//   const currentDate = new Date();
-//   try {
-//     const order = await Order.find({
-//       "ticketSummary.date": { $gt: new Date(currentDate) },
-//     });
-//     // console.log("checking upcoming");
-//     // console.log(order);
-//     return res.status(201).json(order);
-//   } catch (error) {
-//     // console.log(error);
-//     return res.status(500).json({ message: "Internal server error!" });
-//   }
-// });
-
+// Get Past Ticket
 app.post("/myticket/past", async (req, res) => {
-  const currentDate = JSON.stringify(new Date()).split("T")[0].split('"')[1];
-
-  const userId = req.body.id; // Assuming userId is passed in the request body
+  const currentDate = new Date();
+  const userId = req.body.userId;
 
   try {
-    // Validate userId is provided
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    // Find orders for the specific user and where the ticket date is in the past
-    const orders = await Order.find({
-      user: userId, // filter by user ID
-      "ticketSummary.date": { $lt: new Date(currentDate) }, // filter by past date
+    // Fetch the orders for the given user and populate related route and bus information
+    const orders = await Order.find({ user: userId }).populate({
+      path: "route",
+      populate: {
+        path: "bus",
+        model: "Bus",
+      },
     });
 
+    // Check if any orders were found for the user
     if (orders.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No past orders found for this user" });
+      return res.status(404).json({ message: "No orders found for this user" });
     }
 
-    // Return the orders found
-    return res.status(200).json(orders);
+    // Normalize current date to midnight (00:00:00)
+    currentDate.setHours(0, 0, 0, 0); // Set the current date to midnight to compare only the date part
+
+    // Filter orders for past orders (those that happened before today)
+    const pastOrders = orders.filter((order) => {
+      if (!order.route || !order.route.date) return false;
+
+      const routeDate = new Date(order.route.date);
+      routeDate.setHours(0, 0, 0, 0); // Normalize route date to midnight (ignore time)
+
+      return routeDate.getTime() < currentDate.getTime();
+    });
+
+    // If no past orders found, return a 404 message
+    if (pastOrders.length === 0) {
+      return res.status(404).json({ message: "No past orders found" });
+    }
+
+    // Return the past orders
+    return res.status(200).json({
+      status: 200,
+      message: "Past Orders retrieved successfully",
+      data: pastOrders,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching orders:", error);
     return res.status(500).json({ message: "Internal server error!" });
   }
 });
-
-// app.post("/myticket/past", async (req, res) => {
-//   const currentDate = JSON.stringify(new Date()).split("T")[0].split('"')[1];
-//   try {
-//     const order = await Order.find({
-//       "ticketSummary.date": { $lt: new Date(currentDate) },
-//     });
-//     // console.log("checking past");
-//     // console.log(order);
-//     return res.status(201).json(order);
-//   } catch (error) {
-//     // console.log(error);
-//     return res.status(500).json({ message: "Internal server error!" });
-//   }
-// });
 
 module.exports = app;

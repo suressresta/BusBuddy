@@ -26,3 +26,16 @@ export const error = (title) => {
     theme: "colored",
   });
 };
+
+export const unsucess = (title) => {
+  return toast.error(title, {
+    position: toast.POSITION.TOP_CENTER,
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+  });
+};
