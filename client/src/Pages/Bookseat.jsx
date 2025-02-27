@@ -66,8 +66,9 @@ const SeatSelection = () => {
   };
 
   const isSeatBooked = (seatNumber) => {
-    return seatData.some((seat) => seat.seatNumber.includes(seatNumber));
+    return seatData.some((seat) => seat.seatNumber.includes(seatNumber)); // If seatNumber is an array in seatData
   };
+
   const bookedSeatsCount = seatData.reduce(
     (avaliableSeat, order) => avaliableSeat + order.seatNumber.length,
     0

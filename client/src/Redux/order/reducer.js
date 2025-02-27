@@ -6,6 +6,7 @@ import {
 } from "../../plugins/https";
 import {
   deleteOrderData,
+  setOneOrder,
   setOrder,
   setPastOrder,
   setTodayOrder,
@@ -52,7 +53,9 @@ export const getOrderById = (id) => async (dispatch) => {
 export const addOrder = (order) => async (dispatch) => {
   try {
     const res = await PostRequest("/order", order);
-    dispatch(setOrder(res.data));
+    console.log("The order data in redux are:", res);
+    dispatch(setOrder(res));
+    dispatch(setOneOrder(res));
     dispatch(getOrder());
   } catch (error) {
     console.error(error);
@@ -130,6 +133,7 @@ export const updateOrderData = (updatingOrder, id) => async (dispatch) => {
 };
 
 const initialState = {
+  setData: "",
   orderData: [],
   orderDatabyId: "",
   seatOrder: [],
@@ -142,6 +146,11 @@ const initialState = {
 
 export const orderReducer = (state = initialState, action) => {
   switch (action.type) {
+    case "SET_ORDER":
+      return {
+        ...state,
+        setData: action.payload,
+      };
     case ADD_ORDER:
       return {
         ...state,

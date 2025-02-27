@@ -8,7 +8,7 @@ import {
 } from "./auth.types";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { error, success } from "../../Utils/notification";
+import { unsucess, success } from "../../Utils/notification";
 
 // Login API
 export const loginAPI = (data, navigate) => async (dispatch) => {
@@ -16,7 +16,7 @@ export const loginAPI = (data, navigate) => async (dispatch) => {
     let response = await axios.post("http://localhost:8080/user/login", data);
 
     if (response.data.status === "Failed") {
-      error(response.data.message);
+      unsucess(response.data.message);
     } else {
       const user = response.data.message.user;
       const token = response.data.message.token;
@@ -42,8 +42,8 @@ export const loginAPI = (data, navigate) => async (dispatch) => {
     dispatch({
       type: AUTH_LOG_IN_ERROR,
     });
-    console.log(error);
-    // error("Something went wrong. Please try again.");
+    // console.log(error);
+    unsucess("Something went wrong. Please try again.");
   }
 };
 

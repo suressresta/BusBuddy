@@ -53,12 +53,12 @@ app.get("/complete-payment", async (req, res) => {
     await order.findByIdAndUpdate(paymentInfo.decodedData.transaction_uuid, {
       $set: { status: "confirmed" },
     });
-    // Respond with success message
-    res.json({
-      success: true,
-      message: "Payment successful",
-      paymentData,
-    });
+    // res.json({
+    //   success: true,
+    //   message: "Payment successful",
+    //   paymentData,
+    // });
+    res.redirect("http://localhost:3000");
   } catch (error) {
     console.log("The error:", error);
     res.status(500).json({

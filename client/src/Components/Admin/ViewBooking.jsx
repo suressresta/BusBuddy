@@ -23,7 +23,8 @@ const ViewBoking = () => {
   const routeData = useSelector((state) => state.route.routeData);
   // console.log("Route data:", routeData);
   const orderData = useSelector((state) => state.order.seatOrder);
-  console.log(orderData);
+
+  console.log("The order data are:", orderData);
   useEffect(() => {
     dispatch(getRoute());
     dispatch(getBus());
@@ -192,7 +193,7 @@ const ViewBoking = () => {
                       </td>{" "}
                       {/* SeatNumber column */}
                       <td className="px-4 py-2 border">
-                        Rs {order.totalAmount}
+                        Rs {order.totalAmount} ({order.status})
                       </td>
                       <td className="px-4 py-2 border">
                         {new Date(order.registeredDate).toLocaleDateString(

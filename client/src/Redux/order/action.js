@@ -1,5 +1,6 @@
 import {
   ADD_ORDER,
+  SET_ORDER,
   VIEW_ORDER,
   REMOVE_ORDER,
   UPDATE_ORDER,
@@ -12,13 +13,19 @@ import {
   VIEW_ORDERBYID,
 } from "./actionTypes";
 
+export const setOneOrder = (setData) => {
+  return {
+    type: SET_ORDER,
+    payload: setData,
+  };
+};
+
 export const setOrder = (order) => {
   return {
     type: ADD_ORDER,
     payload: order,
   };
 };
-
 export const setTodayOrder = (todayOrder) => {
   return {
     type: TODAY_ORDER,

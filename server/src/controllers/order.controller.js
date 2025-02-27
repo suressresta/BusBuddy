@@ -185,6 +185,7 @@ app.get("/seat/:routeId", async (req, res) => {
       number: order.userDetails.phone,
       seatNumber: order.seatNumber,
       totalAmount: order.totalAmount,
+      status: order.status,
       registeredDate: order.createdAt,
     }));
 

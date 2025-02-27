@@ -3,7 +3,6 @@ import AdminRoutes from "./Routes/AdminRoutes";
 import AllRoutes from "./Routes/AllRoutes";
 import { ToastContainer } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 
@@ -15,8 +14,10 @@ function App() {
   const role = Cookies.get("userRole");
 
   useEffect(() => {
-    if (role === "admin" && !location.pathname.startsWith("/admin")) {
+    if (role === "admin" && !isAdminRoute) {
       navigate("/admin");
+    } else if (isAdminRoute && role !== "admin") {
+      navigate("/");  
     }
   }, [role, location, navigate]);
 

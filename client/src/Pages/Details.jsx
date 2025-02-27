@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import styles from "../Styles/details.module.css";
 import { validateEmail, validateMobile } from "../Utils/formValidator";
 import { error, success } from "../Utils/notification";
 import Cookies from "js-cookie";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { PostRequest } from "../plugins/https";
-import { addOrder } from "../Redux/order/reducer";
+import { addOrder, getOrder } from "../Redux/order/reducer";
 import { clearSeat } from "../Redux/order/action";
+import Payment from "./Payment";
 
 function Details() {
   const navigate = useNavigate();
@@ -26,6 +26,8 @@ function Details() {
   };
   const [creds, setcreds] = useState(initialData);
 
+  const [showPayButton, setShowPayButton] = useState(false);
+
   function hanldeChange(e) {
     setcreds({
       ...creds,
@@ -35,6 +37,8 @@ function Details() {
 
   const amount = useSelector((state) => state.order.totalPrice);
   const seat = useSelector((state) => state.order.seats);
+  const order = useSelector((state) => state.order.setData || {});
+  console.log("The res data are:", order);
 
   async function handleclick(e) {
     e.preventDefault();
@@ -85,12 +89,12 @@ function Details() {
     };
 
     try {
-      dispatch(addOrder(orderData));
-      dispatch(clearSeat());
-
-      console.log("The data are:", orderData);
-      navigate("/");
-      success("Ticket booked successfully");
+      dispatch(addOrder(orderData)).then(() => {
+        setShowPayButton(true);
+      });
+      // dispatch(clearSeat());
+      // navigate("/");
+      // success("Ticket booked successfully");
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong, please try again.");
@@ -98,10 +102,17 @@ function Details() {
   }
 
   return (
-    <div className={styles.details}>
-      <form onSubmit={(e) => handleclick(e)}>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">
+    <div className="min-h-screen w-full my-24 flex justify-center items-center">
+      <form
+        onSubmit={(e) => handleclick(e)}
+        className="w-1/2 h-auto border-2 p-4 shadow-xl rounded-2xl "
+      >
+        {/* Name Field */}
+        <div className="mb-6 flex flex-col items-center justify-center">
+          <label
+            htmlFor="name"
+            className="pb-2 font-bold text-lg text-gray-700"
+          >
             Name
           </label>
           <input
@@ -109,11 +120,14 @@ function Details() {
             value={creds.name}
             onChange={hanldeChange}
             type="text"
-            className="form-control"
+            placeholder="Enter your full name"
+            className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 w-10/12 md:w-8/12 lg:w-8/12 rounded-lg p-2 text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:border-blue-300"
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="age" className="form-label">
+
+        {/* Age Field */}
+        <div className="mb-6 flex flex-col items-center justify-center">
+          <label htmlFor="age" className="pb-2 font-bold text-lg text-gray-700">
             Age
           </label>
           <input
@@ -121,52 +135,76 @@ function Details() {
             value={creds.age}
             onChange={hanldeChange}
             type="number"
-            className="form-control"
+            placeholder="Enter your age"
+            className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 w-10/12 md:w-8/12 lg:w-8/12 rounded-lg p-2 text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:border-blue-300"
           />
         </div>
-        <div className="form-floating mb-3">
+
+        {/* Gender Field */}
+        <div className="mb-6 flex flex-col items-center justify-center">
+          <label
+            htmlFor="gender"
+            className="pb-2 font-bold text-lg text-gray-700"
+          >
+            Gender
+          </label>
           <select
-            className="form-select"
-            id="floatingSelect"
-            aria-label="Floating label select example"
             name="gender"
+            value={creds.gender}
             onChange={hanldeChange}
+            className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 w-10/12 md:w-8/12 lg:w-8/12 rounded-lg p-2 text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:border-blue-300"
           >
             <option value="">Select Your Gender</option>
             <option value="men">Men</option>
             <option value="women">Women</option>
           </select>
-          <label htmlFor="floatingSelect">Gender</label>
         </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Email address
+
+        {/* Email Field */}
+        <div className="mb-6 flex flex-col items-center justify-center">
+          <label
+            htmlFor="email"
+            className="pb-2 font-bold text-lg text-gray-700"
+          >
+            Email
           </label>
           <input
-            type="email"
-            className="form-control"
-            id="email"
             name="email"
             value={creds.email}
             onChange={hanldeChange}
+            type="email"
+            placeholder="Enter your email"
+            className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 w-10/12 md:w-8/12 lg:w-8/12 rounded-lg p-2 text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:border-blue-300"
           />
         </div>
-        <div className="mb-3">
-          <label htmlFor="phone" className="form-label">
+
+        {/* Phone Field */}
+        <div className="mb-6 flex flex-col items-center justify-center">
+          <label
+            htmlFor="phone"
+            className="pb-2 font-bold text-lg text-gray-700"
+          >
             Phone No
           </label>
           <input
             name="phone"
             value={creds.phone}
             onChange={hanldeChange}
-            type="number"
-            className="form-control"
+            type="tel"
+            placeholder="Enter your phone number"
+            className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 w-10/12 md:w-8/12 lg:w-8/12 rounded-lg p-2 text-lg transition duration-300 ease-in-out transform hover:scale-105 hover:border-blue-300"
           />
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className=" bg-blue-500 text-white py-2 mb-3 rounded-lg hover:bg-blue-600 transition duration-300 w-10/12 md:w-8/12 lg:w-8/12"
+        >
           Submit
         </button>
+        {/* Payment Component */}
+        {showPayButton && order && <Payment data={order} />}
       </form>
     </div>
   );
