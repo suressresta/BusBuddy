@@ -28,7 +28,7 @@ const Sidebar = () => {
   return (
     <div className="w-64 h-full bg-slate-800 text-white p-4 flex flex-col">
       <div className="text-2xl font-bold mb-8 flex justify-center">
-        <span className="text-yellow-400">Admin Dashboard</span>
+        <span className="text-yellow-400 cursor-pointer">Admin Dashboard</span>
       </div>
       <ul className="space-y-6">
         <li>
@@ -80,7 +80,7 @@ const Sidebar = () => {
         <li>
           <div
             onClick={handleLogout}
-            className="flex items-center no-underline space-x-3 hover:bg-blue-700 p-2 rounded-md transition duration-300 text-white"
+            className="flex items-center no-underline space-x-3 hover:bg-blue-700 p-2 rounded-md transition duration-300 text-white cursor-pointer"
           >
             <FaSignOutAlt size={20} />
             <span>Logout</span>

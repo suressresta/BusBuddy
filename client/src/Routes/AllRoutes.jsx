@@ -12,67 +12,74 @@ import Bookseat from "../Pages/Bookseat";
 import EditTicket from "../Pages/EditMyTicket";
 import EditDetails from "../Pages/EditDetails";
 import Payment from "../Pages/Payment";
+import PaymentSucess from "../Pages/PaymentSucess";
+import PaymentFailure from "../Pages/PaymentFailure";
 
 function AllRoutes() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/signin" element={<Signin />}></Route>
-        <Route path="/signup" element={<Signup />}></Route>
-        <Route path="/selectbus" element={<SelectBus />} />
-        <Route
-          path="/bookticket/:id"
-          element={
-            <Private>
-              <Bookseat />
-            </Private>
-          }
-        />
-        <Route
-          path="/details/:id"
-          element={
-            <Private>
-              <Details />
-            </Private>
-          }
-        />
-        <Route
-          path="/myticket"
-          element={
-            <Private>
-              <Myticket />
-            </Private>
-          }
-        />
-        <Route
-          path="/edit_ticket/:id"
-          element={
-            <Private>
-              <EditTicket />
-            </Private>
-          }
-        />
-        <Route
-          path="/edit_details/:id"
-          element={
-            <Private>
-              <EditDetails />
-            </Private>
-          }
-        />
-        <Route
-          path="/payment"
-          element={
-            <Private>
-              <Payment />
-            </Private>
-          }
-        />
-      </Routes>
+      <div className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/selectbus" element={<SelectBus />} />
+          <Route
+            path="/bookticket/:id"
+            element={
+              <Private>
+                <Bookseat />
+              </Private>
+            }
+          />
+          <Route
+            path="/details/:id"
+            element={
+              <Private>
+                <Details />
+              </Private>
+            }
+          />
+          <Route
+            path="/myticket"
+            element={
+              <Private>
+                <Myticket />
+              </Private>
+            }
+          />
+          <Route
+            path="/edit_ticket/:id"
+            element={
+              <Private>
+                <EditTicket />
+              </Private>
+            }
+          />
+          <Route
+            path="/edit_details/:id"
+            element={
+              <Private>
+                <EditDetails />
+              </Private>
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <Private>
+                <Payment />
+              </Private>
+            }
+          />
+
+          <Route path="/payment-sucess" element={<PaymentSucess />} />
+          <Route path="/payment-failure" element={<PaymentFailure />} />
+        </Routes>
+      </div>
       <Footer />
-    </>
+    </div>
   );
 }
 
