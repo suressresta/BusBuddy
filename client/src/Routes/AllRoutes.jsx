@@ -14,6 +14,7 @@ import EditDetails from "../Pages/EditDetails";
 import Payment from "../Pages/Payment";
 import PaymentSucess from "../Pages/PaymentSucess";
 import PaymentFailure from "../Pages/PaymentFailure";
+import NotFoundPage from "../Pages/NotFoundPage";
 
 function AllRoutes() {
   return (
@@ -76,6 +77,7 @@ function AllRoutes() {
 
           <Route path="/payment-sucess" element={<PaymentSucess />} />
           <Route path="/payment-failure" element={<PaymentFailure />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
       <Footer />

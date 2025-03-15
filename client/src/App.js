@@ -2,9 +2,10 @@ import "./App.css";
 import AdminRoutes from "./Routes/AdminRoutes";
 import AllRoutes from "./Routes/AllRoutes";
 import { ToastContainer } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
+import NotFoundPage from "./Pages/NotFoundPage";
 
 function App() {
   const location = useLocation();
@@ -17,7 +18,7 @@ function App() {
     if (role === "admin" && !isAdminRoute) {
       navigate("/admin");
     } else if (isAdminRoute && role !== "admin") {
-      navigate("/");  
+      navigate("/");
     }
   }, [role, location, navigate]);
 

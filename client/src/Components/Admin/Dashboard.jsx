@@ -15,7 +15,6 @@ const Dashboard = () => {
   return (
     <div className="h-screen   bg-gray-50">
       {/* Sidebar */}
-
       {/* Main Content */}
       <div className="flex-1 p-8 bg-gray-100 overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
