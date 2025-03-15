@@ -11,6 +11,8 @@ import Cookies from "js-cookie";
 import { logoutAPI } from "../Redux/authentication/auth.action";
 import { useDispatch } from "react-redux";
 import { error } from "../Utils/notification";
+import NotFoundPage from "../Pages/NotFoundPage";
+import Settings from "../Components/Admin/Settings";
 
 const AdminRoutes = () => {
   const navigate = useNavigate();
@@ -37,6 +39,8 @@ const AdminRoutes = () => {
           <Route path="/admin/view-bookings" element={<ViewBooking />} />
           <Route path="/admin/view-bus" element={<ViewBus />} />
           <Route path="/admin/view-bus-route" element={<ViewRoute />} />
+          <Route path="/admin/settings" element={<Settings />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </div>
