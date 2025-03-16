@@ -18,9 +18,11 @@ function Footer() {
                   <span style={{ color: "#ff9c00" }}>Bus</span>Buddy
                 </h3>
                 <p className="mb-30 footer-desc">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad
-                  soluta facilis eos quia optio iusto odit atque eum tempore,
-                  quisquam officiis vero veniam hic,
+                  The BusBuddy Online Bus Ticketing System is a modern and
+                  user-friendly platform designed to simplify the process of
+                  booking bus tickets. It allows passengers to view schedules,
+                  select routes, choose seats, and make secure payments online,
+                  providing a seamless travel planning experience.
                 </p>
               </div>
             </div>
@@ -81,7 +83,10 @@ function Footer() {
           <div className="d-flex justify-content-center">
             <div className="copyright">
               <p className={styles.companyinfo}>
-              ©Copyright 2024 <b><span style={{ color: "#ff9c00" }}>Bus</span>Buddy.com</b>
+                ©Copyright 2024{" "}
+                <b>
+                  <span style={{ color: "#ff9c00" }}>Bus</span>Buddy.com
+                </b>
               </p>
             </div>
           </div>

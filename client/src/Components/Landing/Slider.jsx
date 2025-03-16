@@ -133,7 +133,7 @@ function Slider() {
       } else {
         setsource("");
         setdestination("");
-        toast.error("City Not Found");
+        toast.error("Bus Not Found");
       }
     } catch (error) {
       toast.error("No Bus avaliable on that day");

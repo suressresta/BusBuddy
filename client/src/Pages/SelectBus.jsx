@@ -117,7 +117,7 @@ function SelectBus() {
                     <hr />
                     <div>
                       <h5>Price : RS {ele.price}</h5>
-                      <h5>
+                      <h5 style={{display:"flex"}}>
                         {Array(5)
                           .fill("")
                           .map((_, i) => (

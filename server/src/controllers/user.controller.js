@@ -71,4 +71,13 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/", async (req, res) => {
+  try {
+    const data = await UserModel.find({});
+    return res.send({ status: "success", data: data });
+  } catch (error) {
+    return res.status(500).send({ status: "failed", data: error.message });
+  }
+});
+
 module.exports = app;

@@ -13,6 +13,15 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.delete("/:id", async (req, res) => {
+  try {
+    const data = await CityModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Deleted sucessfully" });
+  } catch (error) {
+    return res.status(500).send({ status: "failed", data: error.message });
+  }
+});
+
 // // Route to add a new city
 app.post("/", async (req, res) => {
   try {

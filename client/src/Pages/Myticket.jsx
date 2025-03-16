@@ -212,7 +212,7 @@ function Myticket() {
                     <div className={styles.summarycontainer}>
                       <span className={styles.fareslb}>Amount</span>
                       <span className={styles.summaryvalue}>
-                        <span className={styles.summarycurrency}>INR</span>
+                        <span className={styles.summarycurrency}>RS</span>
                         <span>{ele.ticketSummary.amount}</span>
                       </span>
                     </div>
@@ -281,7 +281,7 @@ function Myticket() {
                     <div className={styles.summarycontainer}>
                       <span className={styles.fareslb}>Amount</span>
                       <span className={styles.summaryvalue}>
-                        <span className={styles.summarycurrency}>INR</span>
+                        <span className={styles.summarycurrency}>RS</span>
                         <span>{ele.ticketSummary.amount}</span>
                       </span>
                     </div>
@@ -350,7 +350,7 @@ function Myticket() {
                     <div className={styles.summarycontainer}>
                       <span className={styles.fareslb}>Amount</span>
                       <span className={styles.summaryvalue}>
-                        <span className={styles.summarycurrency}>INR</span>
+                        <span className={styles.summarycurrency}>RS</span>
                         <span>{ele.ticketSummary.amount}</span>
                       </span>
                     </div>

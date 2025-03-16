@@ -17,7 +17,7 @@ function Growing() {
             <div className={styles.countryName}>customers</div>
             <div className={styles.numbers}>23 M</div>
             <div className={styles.para}>
-              redBus is trusted by over 23 million happy customers globally
+              BusBuddy is trusted by over 23 million happy customers globally
             </div>
           </div>
           <div
