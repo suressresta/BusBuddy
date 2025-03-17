@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBus } from "../../Redux/bus/reducer";
 import { addRoute } from "../../Redux/route/reducer";
 import { useNavigate } from "react-router-dom";
+import { success, unsucess } from "../../Utils/notification";
 
 const AddBusRoute = () => {
   // State to manage form data, including new fields
@@ -38,17 +39,38 @@ const AddBusRoute = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addRoute(routeDetails));
-    setRouteDetails({
-      from: "",
-      to: "",
-      arrival: "",
-      departure: "",
-      price: "",
-      bus: "",
-      date: "",
-    });
-    navigate("/admin/view-bus-route");
+    try {
+      if (
+        !routeDetails.from ||
+        !routeDetails.to ||
+        !routeDetails.arrival ||
+        !routeDetails.departure ||
+        !routeDetails.price ||
+        !routeDetails.bus ||
+        !routeDetails.date
+      ) {
+        unsucess("All fields are required.");
+      }
+      const result = dispatch(addRoute(routeDetails));
+      if (result?.status === "success") {
+        setRouteDetails({
+          from: "",
+          to: "",
+          arrival: "",
+          departure: "",
+          price: "",
+          bus: "",
+          date: "",
+        });
+
+        navigate("/admin/view-bus-route");
+        success("Route Added sucessfully");
+      } else {
+        unsucess("Failed to add route. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

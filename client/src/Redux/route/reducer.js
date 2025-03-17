@@ -4,6 +4,7 @@ import {
   PostRequest,
   PutRequest,
 } from "../../plugins/https";
+import { unsucess } from "../../Utils/notification";
 import {
   setRoute,
   viewRoute,
@@ -47,6 +48,7 @@ export const addRoute = (routeData) => async (dispatch) => {
     dispatch(setRoute(res.data));
     dispatch(getRoute());
   } catch (error) {
+    // unsucess("Error in adding routes");
     console.error("Error adding route:", error.response || error);
   }
 };

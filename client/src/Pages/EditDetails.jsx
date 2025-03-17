@@ -108,6 +108,7 @@ const Details = () => {
           </label>
           <input
             name="age"
+            min="10"
             value={creds.age}
             onChange={hanldeChange}
             type="number"

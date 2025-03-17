@@ -32,10 +32,15 @@ app.get("/:id", async (req, res) => {
 
 //Add the bus
 app.post("/", async (req, res) => {
-  const { bus, date } = req.body;
+  const { bus, date, from, to } = req.body;
   try {
     if (!bus || !date) {
       return res.status(400).json({ message: "Bus ID and date are required" });
+    }
+    if (from == to) {
+      return res
+        .status(400)
+        .json({ message: "Same Destination cannot be valid." });
     }
     const existingRoute = await routeModel.findOne({
       bus: bus,

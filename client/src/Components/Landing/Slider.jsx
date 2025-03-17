@@ -22,7 +22,7 @@ function Slider() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let mindate = new Date().toISOString().split("T")[0];
+    let mindate = new Date().toISOString().split("T")[0];  
     let maxdate = new Date().toISOString().split("T")[0];
     // console.log(mindate, maxdate);
     setdate(mindate);
