@@ -60,11 +60,11 @@ const EditProfileModal = ({ user, closeEditModal }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 ">
       <div className="bg-black bg-opacity-50 border-2 rounded-lg text-white shadow-lg p-6 w-96">
         <button
           onClick={closeEditModal}
-          className="absolute top-2 right-2 text-xl hover:scale-125 duration-300"
+          className="absolute top-2 right-1/4 text-2xl hover:scale-125 duration-300"
         >
           &times;
         </button>

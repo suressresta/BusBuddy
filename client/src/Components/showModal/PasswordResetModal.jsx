@@ -43,11 +43,11 @@ const PasswordResetModal = ({ user, closePasswordEditModal }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-black bg-opacity-50 border-2 rounded-lg text-white shadow-lg p-6 w-96">
           <button
             onClick={closePasswordEditModal}
-            className="absolute top-2 right-2 text-xl hover:scale-125 duration-300"
+            className="absolute top-2 right-1/4 text-2xl hover:scale-125 duration-300"
           >
             &times;
           </button>

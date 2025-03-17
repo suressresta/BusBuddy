@@ -22,7 +22,7 @@ function Slider() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let mindate = new Date().toISOString().split("T")[0];  
+    let mindate = new Date().toISOString().split("T")[0];
     let maxdate = new Date().toISOString().split("T")[0];
     // console.log(mindate, maxdate);
     setdate(mindate);
@@ -126,10 +126,19 @@ function Slider() {
         date,
       });
       if (res.data.status === "success") {
-        navigate({
-          pathname: "/selectbus",
-          search: `?from=${source}&to=${destination}&date=${date}`,
+        let data = await axios.post("http://localhost:8080/route/busRoute", {
+          from: source,
+          to: destination,
+          date: date,
         });
+        if (data == "sucess") {
+          navigate({
+            pathname: "/selectbus",
+            search: `?from=${source}&to=${destination}&date=${date}`,
+          });
+        } else {
+          toast.error(" No Bus Found on that date");
+        }
       } else {
         setsource("");
         setdestination("");
@@ -253,7 +262,7 @@ function Slider() {
                   key={i}
                 >
                   <h6 style={{ paddingTop: "5px", paddingLeft: "5px" }}>
-                    {item.name},{item.state}
+                    {item.name}
                   </h6>
                   <hr />
                 </div>
@@ -279,7 +288,7 @@ function Slider() {
                   key={i}
                 >
                   <h6 style={{ paddingTop: "5px", paddingLeft: "5px" }}>
-                    {item.name},{item.state}
+                    {item.name}
                   </h6>
                   <hr />
                 </div>

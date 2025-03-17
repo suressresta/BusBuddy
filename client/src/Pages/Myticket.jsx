@@ -34,6 +34,7 @@ function Myticket() {
       try {
         dispatch(deleteOrder(ele._id));
         success("Ticket Cancelled Successfully");
+        success("Your payment will be refunded to your account very soon");
 
         // Optimistically update the state to remove the deleted ticket
         setToday((prev) => prev.filter((item) => item._id !== ele._id));
